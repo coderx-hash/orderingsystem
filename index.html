@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gelo Kiosk - Fixed Layout</title>
+    <title>Gelo Kiosk - Designer Header</title>
     
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,11 +11,13 @@
 
     <style>
         :root {
-            --brand-red: #e3000f;
+            --brand-red: #e3000f; /* Primary */
+            --brand-dark-red: #c0000c; /* Gradient end */
             --brand-yellow: #f8c026;
             --dark: #202124;
-            --light: #f8f9fa;
-            --shadow: 0 4px 15px rgba(0,0,0,0.08);
+            --light: #f4f6f8;
+            --white: #ffffff;
+            --shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -36,153 +38,207 @@
             overflow-y: auto; overflow-x: hidden;
             -webkit-overflow-scrolling: touch; 
         }
-        .screen.active { display: flex; animation: fadeIn 0.2s ease-out; }
+        .screen.active { display: flex; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* --- BUTTONS --- */
-        .btn { border: none; padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'DM Sans', sans-serif; font-size: 1rem; transition: 0.1s; }
+        .btn { border: none; padding: 15px; border-radius: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: 'DM Sans', sans-serif; font-size: 1rem; transition: 0.1s; }
         .btn:active { transform: scale(0.97); }
-        .btn-primary { background: var(--brand-red); color: white; box-shadow: 0 4px 12px rgba(227,0,15,0.3); }
+        .btn-primary { background: var(--brand-red); color: white; box-shadow: 0 4px 15px rgba(227,0,15,0.4); }
         .btn-outline { background: white; border: 2px solid #eee; color: #555; }
 
-        /* --- 1. INTRO --- */
+        /* --- 1. INTRO SCREEN --- */
         #screen-intro { background: var(--dark); color: white; justify-content: center; padding: 20px; text-align: center; }
         .brand-main { font-family: 'Fredoka', sans-serif; font-size: clamp(3rem, 10vw, 5rem); color: var(--brand-yellow); margin: 0; line-height: 1.1; }
-        .tap-icon { font-size: 5rem; margin: 30px 0; animation: bounce 2s infinite; color: white; }
+        .tap-icon { font-size: clamp(4rem, 15vw, 6rem); margin: 30px 0; animation: bounce 2s infinite; color: white; }
         .tap-text { font-size: 1.5rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
         /* --- 2. DETAILS & TYPE --- */
-        .card-box { background: white; padding: 30px 20px; border-radius: 20px; box-shadow: var(--shadow); width: 95%; max-width: 480px; text-align: center; margin: auto; }
+        .card-box { background: white; padding: 30px 20px; border-radius: 25px; box-shadow: var(--shadow); width: 95%; max-width: 480px; text-align: center; margin: auto; }
         .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 25px 0; }
-        /* Mobile: Stack Options */
-        @media(max-width: 600px) { .opt-grid { grid-template-columns: 1fr; } }
+        @media(max-width:600px){ .opt-grid { grid-template-columns: 1fr; } }
         
-        .opt-card { background: #f4f4f4; padding: 25px 10px; border-radius: 15px; border: 2px solid transparent; cursor: pointer; }
+        .opt-card { background: #f8f8f8; padding: 25px 10px; border-radius: 18px; border: 2px solid transparent; cursor: pointer; position: relative; overflow: hidden; }
         .opt-card.active, .opt-card:active { border-color: var(--brand-red); background: #fff0f0; }
         
-        .input-field { width: 100%; padding: 18px; margin-bottom: 15px; border: 2px solid #eee; border-radius: 12px; font-size: 1.2rem; outline: none; background: #fcfcfc; }
-        .input-field:focus { border-color: var(--brand-red); background: white; }
+        .input-field { width: 100%; padding: 18px; margin-bottom: 15px; border: 2px solid #eee; border-radius: 14px; font-size: 1.2rem; outline: none; background: #fff; text-align: center; font-weight: bold; }
+        .input-field:focus { border-color: var(--brand-red); }
 
-        /* --- 3. FIXED MENU NAVIGATION (The Fix) --- */
-        /* This wrapper holds both Header and Categories so they stick together */
-        .sticky-nav-wrapper {
-            position: sticky; top: 0; z-index: 50;
-            background: white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        /* --- 3. DESIGNER HEADER (THE NEW PART) --- */
+        .designer-header {
+            background: linear-gradient(135deg, var(--brand-red), var(--brand-dark-red));
+            color: white;
+            padding: 20px 20px 50px 20px; /* Extra padding bottom for overlap */
+            border-bottom-left-radius: 35px;
+            border-bottom-right-radius: 35px;
+            box-shadow: 0 10px 30px rgba(192, 0, 12, 0.3);
+            text-align: center;
+            position: relative;
+            z-index: 50;
+            flex-shrink: 0;
         }
 
-        .menu-header { 
-            padding: 15px 20px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            border-bottom: 1px solid #f0f0f0;
+        /* Top Brand Strip */
+        .header-top {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px; opacity: 0.9;
+        }
+        .mini-logo { font-family: 'Fredoka', sans-serif; font-size: 1.1rem; letter-spacing: 1px; }
+        .btn-change {
+            background: rgba(255,255,255,0.2); color: white; border: none;
+            padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;
+            cursor: pointer; backdrop-filter: blur(5px);
+        }
+
+        /* Main Info */
+        .user-greeting {
+            font-size: 1rem; opacity: 0.9; letter-spacing: 1px; text-transform: uppercase;
+        }
+        .user-name-display {
+            font-family: 'Fredoka', sans-serif; font-size: 2.5rem; margin: 0; line-height: 1.2;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
-        .cat-bar { 
-            padding: 10px 15px; 
-            display: flex; gap: 10px; overflow-x: auto; 
-            scrollbar-width: none; 
+        /* The Big Table Badge */
+        .table-badge-container {
+            margin-top: 15px; display: inline-block;
+        }
+        .table-pill {
+            background: var(--white); color: var(--brand-red);
+            padding: 8px 25px; border-radius: 50px;
+            font-size: 1.2rem; font-weight: 800;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        /* Floating Categories (Overlapping Header) */
+        .cat-floater {
+            margin-top: -30px; /* Pull up into header */
+            padding: 0 15px; z-index: 60;
+        }
+        .cat-scroll { 
+            display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; 
+            padding: 5px; -webkit-overflow-scrolling: touch;
         }
         .cat-btn { 
-            padding: 10px 20px; border-radius: 30px; 
-            background: #f8f9fa; border: 1px solid #eee; color: #555; 
+            padding: 12px 25px; border-radius: 30px; 
+            background: var(--white); border: none; color: #666; 
             font-weight: 700; font-size: 0.95rem; white-space: nowrap; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: 0.2s;
         }
-        .cat-btn.active { background: var(--dark); color: white; border-color: var(--dark); }
+        .cat-btn.active { background: var(--dark); color: white; transform: scale(1.05); }
 
         /* --- MENU GRID --- */
+        .menu-area {
+            padding: 20px; flex: 1;
+            padding-bottom: 140px; /* Space for cart */
+        }
         .menu-grid { 
-            padding: 20px; 
-            padding-bottom: 160px; /* Big space for Cart Bar */
             display: grid; 
-            /* Desktop: Auto columns | Mobile: 1 Column Force */
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 20px; 
+            /* Mobile First: 1 Column */
+            grid-template-columns: 1fr; 
+            gap: 25px; 
         }
-        /* Mobile Specific Grid Override */
-        @media (max-width: 600px) {
-            .menu-grid { grid-template-columns: 1fr; } /* Force single column on phones */
-        }
+        @media(min-width: 768px) { .menu-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); } }
 
-        /* --- FOOD CARD --- */
+        /* --- CARD DESIGN --- */
         .food-card { 
-            background: white; border-radius: 16px; 
+            background: white; border-radius: 20px; 
             overflow: hidden; box-shadow: var(--shadow); 
             display: flex; flex-direction: column; 
-            border: 1px solid #eee;
+            border: 1px solid #f0f0f0;
         }
         .food-img { width: 100%; height: 200px; object-fit: cover; background: #eee; }
-        .food-body { padding: 15px; flex: 1; display: flex; flex-direction: column; }
+        .food-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
         
-        .food-name { font-family: 'Fredoka', sans-serif; font-size: 1.4rem; margin-bottom: 5px; color: var(--dark); line-height: 1.2; }
-        .food-desc { font-size: 0.9rem; color: #777; margin-bottom: 15px; line-height: 1.4; flex: 1; }
+        .food-name { 
+            font-family: 'Fredoka', sans-serif; 
+            font-size: 1.5rem; margin-bottom: 5px; 
+            color: var(--dark); line-height: 1.1; 
+        }
+        .food-desc { font-size: 0.95rem; color: #888; margin-bottom: 20px; line-height: 1.4; }
         
-        .food-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
-        .price-tag { font-weight: 800; font-size: 1.3rem; color: var(--brand-red); }
+        /* Auto-Reflect Badge */
+        .item-status {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+        }
+        .status-badge {
+            background: var(--brand-yellow); color: var(--dark); 
+            font-size: 0.8rem; font-weight: bold; padding: 4px 10px; 
+            border-radius: 10px; opacity: 0; transition: 0.3s;
+        }
+        .status-badge.visible { opacity: 1; }
 
-        /* Actions */
+        .price-row { display: flex; justify-content: space-between; align-items: center; }
+        .price-tag { font-weight: 800; font-size: 1.4rem; color: var(--brand-red); }
+
+        /* Controls */
         .actions { display: flex; align-items: center; gap: 10px; }
-        .qty-box { display: flex; align-items: center; background: #f0f0f0; border-radius: 8px; padding: 3px; }
+        .qty-box { 
+            display: flex; align-items: center; background: #f4f4f4; 
+            border-radius: 12px; padding: 4px; gap: 5px;
+        }
         .q-btn { 
-            width: 40px; height: 40px; border: none; background: white; 
-            border-radius: 6px; font-weight: 700; font-size: 1.2rem; 
-            cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            width: 42px; height: 42px; border: none; background: white; 
+            border-radius: 10px; font-weight: 700; font-size: 1.2rem; 
+            cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             display: flex; align-items: center; justify-content: center;
         }
-        .q-btn:active { background: #ddd; }
-        .q-val { width: 35px; text-align: center; font-weight: 700; font-size: 1.1rem; }
+        .q-btn:active { background: #eee; }
+        .q-val { width: 30px; text-align: center; font-weight: 700; font-size: 1.1rem; }
         
         .add-btn { 
             background: var(--dark); color: white; border: none; 
-            padding: 0 25px; height: 45px; border-radius: 8px; 
+            padding: 0 25px; height: 50px; border-radius: 12px; 
             font-weight: 700; font-size: 1rem; cursor: pointer;
         }
         .add-btn:active { background: var(--brand-red); }
 
         /* --- CART FLOATING BAR --- */
         .cart-float { 
-            position: fixed; bottom: 20px; left: 15px; right: 15px; 
+            position: fixed; bottom: 25px; left: 15px; right: 15px; 
             background: var(--brand-red); color: white; 
-            padding: 18px 25px; border-radius: 16px; 
+            padding: 20px 25px; border-radius: 20px; 
             display: flex; justify-content: space-between; align-items: center; 
-            box-shadow: 0 10px 30px rgba(227, 0, 15, 0.4); 
+            box-shadow: 0 15px 40px rgba(227, 0, 15, 0.4); 
             z-index: 100; cursor: pointer; 
             max-width: 600px; margin: 0 auto;
+            transform: translateY(150%); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        .cart-float.show { transform: translateY(0); }
         .cart-total { font-size: 1.4rem; font-weight: 800; }
 
         /* --- MODAL --- */
         .modal-overlay { 
             position: fixed; inset: 0; background: rgba(0,0,0,0.85); 
-            z-index: 200; display: none; justify-content: center; align-items: center; 
-            padding: 15px; backdrop-filter: blur(5px); 
+            z-index: 200; display: none; justify-content: center; align-items: flex-end; 
+            backdrop-filter: blur(5px); 
         }
         .modal-box { 
-            background: white; width: 100%; max-width: 450px; 
-            padding: 25px; border-radius: 20px; 
-            max-height: 85vh; display: flex; flex-direction: column; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            background: white; width: 100%; max-width: 500px; 
+            padding: 30px; border-radius: 30px 30px 0 0; 
+            max-height: 90vh; display: flex; flex-direction: column; 
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+            animation: slideUpModal 0.3s;
         }
+        @keyframes slideUpModal { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        /* Review List */
         .review-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f0f0f0; }
-        .review-left { flex: 1; }
-        .review-right { display: flex; align-items: center; gap: 10px; }
-
+        
         /* Receipt */
         .receipt-paper { 
-            background: #fff; padding: 20px; border: 1px dashed #ccc; 
+            background: #fff; padding: 25px; border: 1px dashed #333; 
             font-family: 'Courier New', monospace; text-align: center; 
-            font-size: 0.9rem; margin-top: 10px; 
+            font-size: 0.9rem; margin-top: 10px; width: 100%;
         }
-        .r-row { display: flex; justify-content: space-between; margin: 4px 0; text-align: left; }
+        .r-row { display: flex; justify-content: space-between; margin: 5px 0; text-align: left; }
         .r-div { border-bottom: 1px dashed #000; margin: 10px 0; }
-        .r-total { font-weight: 800; font-size: 1.2rem; }
-
+        
+        .hidden-trigger { position: absolute; top:0; left:0; width:60px; height:60px; z-index:999; }
         /* Admin */
         .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; height: 100%; overflow: hidden; }
         @media(max-width:768px){ .admin-grid { grid-template-columns: 1fr; overflow-y: auto; } }
-        .hidden-trigger { position: absolute; top:0; left:0; width:60px; height:60px; z-index:999; }
     </style>
 </head>
 <body>
@@ -199,9 +255,9 @@
     </script>
 
     <div id="screen-intro" class="screen active" onclick="app.nav('type')">
-        <div style="text-align:center;">
+        <div class="flex-center">
             <div style="font-size:1.2rem; opacity:0.8; margin-bottom:5px;">Welcome to</div>
-            <h1 class="brand-main">Gelo Kiosk</h1>
+            <h1 class="brand-main">Gelo's Kiosk</h1>
             <div class="tap-icon"><i class="fas fa-hand-pointer"></i></div>
             <div class="tap-text">Tap to Order</div>
         </div>
@@ -210,15 +266,15 @@
 
     <div id="screen-type" class="screen flex-center">
         <div class="card-box">
-            <h2 style="font-size:1.8rem; margin:0; font-family:'Fredoka'">Dining Option</h2>
+            <h2 style="font-size:2rem; margin:0; font-family:'Fredoka'">Dining Option</h2>
             <div class="opt-grid">
                 <div class="opt-card" onclick="app.selectType('dine-in')">
-                    <i class="fas fa-utensils" style="font-size:2.5rem; color:var(--brand-red); margin-bottom:10px;"></i>
-                    <div style="font-weight:800; font-size:1.2rem;">Dine In</div>
+                    <i class="fas fa-utensils" style="font-size:3rem; color:var(--brand-red); margin-bottom:15px;"></i>
+                    <div style="font-weight:800; font-size:1.3rem;">Dine In</div>
                 </div>
                 <div class="opt-card" onclick="app.selectType('take-out')">
-                    <i class="fas fa-bag-shopping" style="font-size:2.5rem; color:var(--brand-red); margin-bottom:10px;"></i>
-                    <div style="font-weight:800; font-size:1.2rem;">Take Out</div>
+                    <i class="fas fa-bag-shopping" style="font-size:3rem; color:var(--brand-red); margin-bottom:15px;"></i>
+                    <div style="font-weight:800; font-size:1.3rem;">Take Out</div>
                 </div>
             </div>
             <button class="btn btn-outline" style="width:100%" onclick="app.nav('intro')">Cancel</button>
@@ -226,34 +282,38 @@
     </div>
 
     <div id="screen-details" class="screen flex-center">
-        <div class="card-box" style="text-align:left;">
-            <h2 style="margin:0 0 20px 0; font-family:'Fredoka'">Your Info</h2>
+        <div class="card-box">
+            <h2 style="margin:0 0 20px 0; font-family:'Fredoka'; font-size:2rem;">Your Info</h2>
             
-            <label style="font-weight:700; font-size:0.9rem; margin-bottom:5px; display:block;">Name</label>
-            <input type="text" id="inp-name" class="input-field" placeholder="Enter Name" autocomplete="off">
-            
-            <div id="group-table">
-                <label style="font-weight:700; font-size:0.9rem; margin-bottom:5px; display:block;">Table Number</label>
-                <input type="number" id="inp-table" class="input-field" placeholder="#" style="width:100px; font-weight:bold; color:var(--brand-red);">
-            </div>
+            <input type="text" id="inp-name" class="input-field" placeholder="Enter Your Name" autocomplete="off">
+            <input type="number" id="inp-table" class="input-field" placeholder="Table Number" autocomplete="off">
 
-            <button class="btn btn-primary" style="width:100%; padding:16px; font-size:1.1rem;" onclick="app.confirmDetails()">Next Step <i class="fas fa-arrow-right"></i></button>
-            <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="app.nav('type')">Back</button>
+            <button class="btn btn-primary" style="width:100%; padding:18px; font-size:1.2rem;" onclick="app.confirmDetails()">PROCEED <i class="fas fa-arrow-right"></i></button>
+            <button class="btn btn-outline" style="width:100%; margin-top:15px;" onclick="app.nav('type')">Back</button>
         </div>
     </div>
 
     <div id="screen-menu" class="screen">
         
-        <div class="sticky-nav-wrapper">
-            <div class="menu-header">
-                <div>
-                    <div id="disp-name" style="font-weight:800; font-size:1.1rem;">Guest</div>
-                    <div id="disp-info" style="font-size:0.8rem; background:#f4f4f4; padding:2px 8px; border-radius:4px; display:inline-block;">--</div>
-                </div>
-                <button class="btn btn-outline" style="font-size:0.8rem; padding:8px 12px;" onclick="app.changeOrderType()">Change</button>
+        <div class="designer-header">
+            <div class="header-top">
+                <div class="mini-logo"><i class="fas fa-store"></i> GELO'S KIOSK</div>
+                <button class="btn-change" onclick="app.changeOrderType()">CHANGE</button>
             </div>
+            
+            <div class="user-greeting">Hi there,</div>
+            <h1 class="user-name-display" id="disp-name">Guest</h1>
+            
+            <div class="table-badge-container">
+                <div class="table-pill">
+                    <i class="fas fa-chair" id="type-icon"></i>
+                    <span id="disp-type">--</span>
+                </div>
+            </div>
+        </div>
 
-            <div class="cat-bar">
+        <div class="cat-floater">
+            <div class="cat-scroll">
                 <button class="cat-btn active" onclick="app.filter('all', this)">All Items</button>
                 <button class="cat-btn" onclick="app.filter('meal', this)">Meals</button>
                 <button class="cat-btn" onclick="app.filter('drink', this)">Drinks</button>
@@ -261,16 +321,18 @@
             </div>
         </div>
 
-        <div id="menu-grid" class="menu-grid"></div>
+        <div class="menu-area">
+            <div id="menu-grid" class="menu-grid"></div>
+        </div>
 
-        <div id="cart-bar" class="cart-float hidden" onclick="app.viewSummary()">
+        <div id="cart-float" class="cart-float" onclick="app.viewSummary()">
             <div style="display:flex; flex-direction:column;">
                 <span style="font-size:0.8rem; opacity:0.9;">Total Order</span>
                 <span class="cart-total">₱<span id="cart-total">0</span></span>
             </div>
             <div style="font-weight:700; display:flex; align-items:center; gap:10px;">
                 <span style="background:rgba(255,255,255,0.2); padding:4px 12px; border-radius:8px;" id="cart-count">0</span>
-                <span>REVIEW</span> <i class="fas fa-chevron-up"></i>
+                <span>REVIEW <i class="fas fa-chevron-up"></i></span>
             </div>
         </div>
     </div>
@@ -288,7 +350,7 @@
                 <div style="display:flex; justify-content:space-between; font-size:1.5rem; font-weight:800; margin-bottom:20px;">
                     <span>Total</span> <span style="color:var(--brand-red)">₱<span id="sum-total">0</span></span>
                 </div>
-                <button id="btn-pay" class="btn btn-primary" style="width:100%; padding:16px; font-size:1.2rem;" onclick="app.processOrder()">CONFIRM ORDER</button>
+                <button id="btn-pay" class="btn btn-primary" style="width:100%; padding:18px; font-size:1.2rem;" onclick="app.processOrder()">CONFIRM ORDER</button>
             </div>
             
             <div id="view-receipt" class="hidden" style="text-align:center; overflow-y:auto;">
@@ -296,7 +358,7 @@
                 <h2 style="margin:0; color:#27ae60; font-family:'Fredoka'">Order Sent!</h2>
                 
                 <div id="receipt-capture" class="receipt-paper">
-                    <div style="font-weight:900; font-size:1.2rem; margin-bottom:5px;">GELO KIOSK</div>
+                    <div style="font-weight:900; font-size:1.3rem; margin-bottom:5px;">GELO'S KIOSK</div>
                     <div class="r-row"><span>Date:</span> <span id="r-date"></span></div>
                     <div class="r-row"><span>Order ID:</span> <span id="r-queue"></span></div>
                     <div class="r-row"><span>Customer:</span> <span id="r-name"></span></div>
@@ -307,7 +369,7 @@
                     <div class="r-div"></div>
                     <div id="r-items"></div>
                     <div class="r-div" style="border-style:solid;"></div>
-                    <div class="r-row r-total">
+                    <div class="r-row" style="font-weight:800; font-size:1.2rem;">
                         <span>TOTAL</span> <span>₱<span id="r-total"></span></span>
                     </div>
                 </div>
@@ -344,7 +406,7 @@
 
     <script>
         const PRODUCTS = [
-            { id: 1, type: 'meal', name: "Chicken Meal", price: 125, desc: "Fried chicken w/ rice & gravy.", img: "https://placehold.co/500x350/e67e22/FFF?text=Chicken" },
+            { id: 1, type: 'meal', name: "Chicken Meal", price: 125, desc: "Crispy fried chicken w/ rice & gravy.", img: "https://placehold.co/500x350/e67e22/FFF?text=Chicken" },
             { id: 2, type: 'meal', name: "Burger w/ Cheese", price: 95, desc: "Beef patty with cheese & veggies.", img: "https://placehold.co/500x350/8e44ad/FFF?text=Burger" },
             { id: 3, type: 'meal', name: "Spaghetti", price: 85, desc: "Sweet-style spaghetti w/ hotdogs.", img: "https://placehold.co/500x350/c0392b/FFF?text=Spag" },
             { id: 4, type: 'meal', name: "Burger Steak", price: 110, desc: "Burger patty w/ mushroom gravy.", img: "https://placehold.co/500x350/5d4037/FFF?text=Steak" },
@@ -367,7 +429,7 @@
 
             selectType: (t) => {
                 app.state.orderType = t;
-                const grp = document.getElementById('group-table');
+                const grp = document.getElementById('inp-table');
                 if(t === 'take-out') grp.style.display = 'none';
                 else grp.style.display = 'block';
                 app.nav('details');
@@ -376,7 +438,7 @@
             changeOrderType: () => {
                 if(confirm("Start new order?")) {
                     app.state.cart = [];
-                    app.updateCart();
+                    app.updateUI();
                     app.nav('type');
                 }
             },
@@ -389,7 +451,13 @@
 
                 app.state.customer = { name, table: app.state.orderType === 'dine-in' ? table : 'N/A' };
                 document.getElementById('disp-name').innerText = name;
-                document.getElementById('disp-info').innerText = app.state.orderType === 'take-out' ? "TAKE OUT" : "TABLE " + table;
+                
+                const typeText = app.state.orderType === 'take-out' ? "Take Out" : "Table " + table;
+                document.getElementById('disp-type').innerText = typeText;
+                
+                // Set Icon
+                const icon = document.getElementById('type-icon');
+                icon.className = app.state.orderType === 'take-out' ? 'fas fa-bag-shopping' : 'fas fa-chair';
                 
                 app.renderMenu();
                 app.nav('menu');
@@ -404,13 +472,21 @@
 
             renderMenu: () => {
                 const list = app.state.filter === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.type === app.state.filter);
-                document.getElementById('menu-grid').innerHTML = list.map(p => `
+                document.getElementById('menu-grid').innerHTML = list.map(p => {
+                    const cartQty = app.state.cart.filter(i => i.id === p.id).length;
+                    const badgeClass = cartQty > 0 ? "status-badge visible" : "status-badge";
+                    
+                    return `
                     <div class="food-card" id="card-${p.id}">
                         <img src="${p.img}" class="food-img">
                         <div class="food-body">
+                            <div class="item-status">
+                                <span class="${badgeClass}" id="badge-${p.id}">${cartQty}x in Cart</span>
+                            </div>
                             <div class="food-name">${p.name}</div>
                             <div class="food-desc">${p.desc}</div>
-                            <div class="food-footer">
+                            
+                            <div class="price-row">
                                 <div class="price-tag">₱${p.price}</div>
                                 <div class="actions">
                                     <div class="qty-box">
@@ -423,7 +499,7 @@
                             </div>
                         </div>
                     </div>
-                `).join('');
+                `}).join('');
             },
 
             setQty: (id, diff) => {
@@ -441,18 +517,32 @@
                 app.state.qtys[id] = 1; 
                 document.getElementById(`qty-${id}`).innerText = 1;
                 
-                app.updateCart();
+                app.updateUI();
                 const c = document.getElementById(`card-${id}`);
                 c.style.transform = "scale(0.98)";
                 setTimeout(() => c.style.transform = "scale(1)", 150);
             },
 
-            updateCart: () => {
+            updateUI: () => {
                 const tot = app.state.cart.reduce((a,b)=>a+b.price,0);
                 document.getElementById('cart-total').innerText = tot;
                 document.getElementById('cart-count').innerText = app.state.cart.length;
-                const bar = document.getElementById('cart-bar');
-                if(app.state.cart.length > 0) bar.classList.remove('hidden'); else bar.classList.add('hidden');
+                
+                // Show/Hide Cart
+                const bar = document.getElementById('cart-float');
+                if(app.state.cart.length > 0) bar.classList.add('show');
+                else bar.classList.remove('show');
+
+                // Update Badges on cards
+                PRODUCTS.forEach(p => {
+                    const count = app.state.cart.filter(i => i.id === p.id).length;
+                    const badge = document.getElementById(`badge-${p.id}`);
+                    if(badge) {
+                        badge.innerText = `${count}x in Cart`;
+                        if(count > 0) badge.classList.add('visible');
+                        else badge.classList.remove('visible');
+                    }
+                });
             },
 
             viewSummary: () => {
@@ -463,23 +553,23 @@
                 for(let k in grp) {
                     let i = grp[k]; t += (i.count * i.price);
                     h += `<div class="review-item">
-                        <div class="review-left">
-                            <div style="font-weight:700">${i.name}</div>
-                            <small>@ ₱${i.price}</small>
+                        <div style="flex:1">
+                            <div style="font-weight:700; font-size:1.1rem;">${i.name}</div>
+                            <small style="color:#777">@ ₱${i.price}</small>
                         </div>
-                        <div class="review-right">
+                        <div style="display:flex; align-items:center; gap:10px;">
                             <div class="qty-box">
                                 <button class="q-btn" style="width:30px; height:30px;" onclick="app.modCart(${i.id}, -1)">-</button>
                                 <span class="q-val">${i.count}</span>
                                 <button class="q-btn" style="width:30px; height:30px;" onclick="app.modCart(${i.id}, 1)">+</button>
                             </div>
-                            <div style="font-weight:700; min-width:60px; text-align:right;">₱${i.count*i.price}</div>
+                            <div style="width:60px; text-align:right; font-weight:bold;">₱${i.count*i.price}</div>
                         </div>
                     </div>`;
                 }
                 document.getElementById('summary-list').innerHTML = h;
                 document.getElementById('sum-total').innerText = t;
-                document.getElementById('modal-checkout').style.display = 'flex';
+                document.getElementById('modal-checkout').classList.add('open');
                 document.getElementById('view-review').classList.remove('hidden');
                 document.getElementById('view-receipt').classList.add('hidden');
             },
@@ -487,11 +577,11 @@
             modCart: (id, d) => {
                 if(d===1) app.state.cart.push(PRODUCTS.find(p=>p.id==id));
                 else { const idx = app.state.cart.findIndex(p=>p.id==id); if(idx>-1) app.state.cart.splice(idx,1); }
-                app.updateCart(); app.viewSummary();
+                app.updateUI(); app.viewSummary();
                 if(app.state.cart.length===0) app.closeModal();
             },
 
-            closeModal: () => document.getElementById('modal-checkout').style.display = 'none',
+            closeModal: () => document.getElementById('modal-checkout').classList.remove('open'),
 
             processOrder: async () => {
                 const btn = document.getElementById('btn-pay');
@@ -535,7 +625,10 @@
                     const subtotal = data.count * data.price;
                     return `
                     <div class="r-row">
-                        <div style="flex:2;">${data.count}x ${name}</div>
+                        <div style="flex:2; text-align:left;">
+                            <div>${data.count}x ${name}</div>
+                            <div style="font-size:0.75rem; color:#666;">@${data.price}</div>
+                        </div>
                         <div style="flex:1; text-align:right;">₱${subtotal}</div>
                     </div>`;
                 }).join('');
@@ -558,11 +651,11 @@
                         const d = doc.data(); const id = doc.id;
                         const card = `<div style="background:#f9f9f9; padding:10px; margin-bottom:10px; border-radius:8px; border-left:4px solid ${d.status==='pending'?'var(--brand-red)':'green'};">
                             <div style="font-weight:bold; display:flex; justify-content:space-between;">
-                                <span>#${d.queue}</span> <span>${d.type}</span>
+                                <span>#${d.queue}</span> <span>${d.type==='take-out'?'TakeOut':'T-'+d.table}</span>
                             </div>
                             <div>${d.customer} (${d.items.length} items)</div>
-                            ${d.status==='pending' ? `<button onclick="app.setStatus('${id}','ready')" class="btn-primary" style="padding:5px; width:100%; margin-top:5px; border:none; border-radius:4px; cursor:pointer;">Ready</button>` : 
-                            `<button onclick="app.setStatus('${id}','served')" style="padding:5px; width:100%; margin-top:5px; cursor:pointer;">Done</button>`}
+                            ${d.status==='pending' ? `<button class="btn btn-primary" onclick="app.setStatus('${id}','ready')" style="padding:6px; width:100%; font-size:0.9rem; margin-top:5px;">Mark Ready</button>` : 
+                            `<button class="btn btn-outline" onclick="app.setStatus('${id}','served')" style="padding:6px; width:100%; font-size:0.9rem; margin-top:5px;">Done</button>`}
                         </div>`;
                         if(d.status==='pending') p+=card; else if(d.status==='ready') { r+=card; if(!last) last=d; }
                     });
@@ -570,8 +663,8 @@
                     document.getElementById('list-ready').innerHTML = r;
                     if(last) {
                         document.getElementById('mon-q').innerText = last.queue;
-                        document.getElementById('mon-meta').innerHTML = `${last.type}<br>${last.customer}`;
-                    } else { document.getElementById('mon-q').innerText="--"; document.getElementById('mon-meta').innerText="..."; }
+                        document.getElementById('mon-meta').innerHTML = `${last.type==='take-out'?'TAKE OUT':'TABLE '+last.table}<br>${last.customer}`;
+                    } else { document.getElementById('mon-q').innerText="--"; document.getElementById('mon-meta').innerText="Waiting..."; }
                 });
             },
             setStatus: (id,s) => window.fs.updateDoc(window.fs.doc(window.db,"orders",id),{status:s})
