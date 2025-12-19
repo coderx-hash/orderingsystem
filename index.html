@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gelo Kiosk - Mobile Optimized</title>
+    <title>Gelo Kiosk - Fixed Layout</title>
     
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -26,7 +26,7 @@
             height: 100vh; overflow: hidden; 
         }
 
-        /* --- SCREEN CONTAINER --- */
+        /* --- UTILS --- */
         .hidden { display: none !important; }
         .flex-center { display: flex; justify-content: center; align-items: center; flex-direction: column; }
         
@@ -34,131 +34,122 @@
             position: absolute; inset: 0; display: none; z-index: 10; 
             flex-direction: column; background: var(--light);
             overflow-y: auto; overflow-x: hidden;
-            /* Smooth scrolling for mobile */
             -webkit-overflow-scrolling: touch; 
         }
         .screen.active { display: flex; animation: fadeIn 0.2s ease-out; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* --- BUTTONS --- */
-        .btn { border: none; padding: 15px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: 'DM Sans', sans-serif; font-size: 1rem; transition: 0.1s; }
+        .btn { border: none; padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'DM Sans', sans-serif; font-size: 1rem; transition: 0.1s; }
         .btn:active { transform: scale(0.97); }
         .btn-primary { background: var(--brand-red); color: white; box-shadow: 0 4px 12px rgba(227,0,15,0.3); }
         .btn-outline { background: white; border: 2px solid #eee; color: #555; }
 
-        /* --- 1. INTRO SCREEN --- */
+        /* --- 1. INTRO --- */
         #screen-intro { background: var(--dark); color: white; justify-content: center; padding: 20px; text-align: center; }
         .brand-main { font-family: 'Fredoka', sans-serif; font-size: clamp(3rem, 10vw, 5rem); color: var(--brand-yellow); margin: 0; line-height: 1.1; }
-        .tap-icon { font-size: clamp(4rem, 15vw, 6rem); margin: 30px 0; animation: bounce 2s infinite; color: white; }
+        .tap-icon { font-size: 5rem; margin: 30px 0; animation: bounce 2s infinite; color: white; }
         .tap-text { font-size: 1.5rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
-        /* --- 2. DETAILS & TYPE (Fixed Width on Desktop, Full on Mobile) --- */
-        .card-box { 
-            background: white; padding: 30px 20px; border-radius: 20px; 
-            box-shadow: var(--shadow); width: 95%; max-width: 480px; 
-            text-align: center; margin: auto; 
-        }
-        
+        /* --- 2. DETAILS & TYPE --- */
+        .card-box { background: white; padding: 30px 20px; border-radius: 20px; box-shadow: var(--shadow); width: 95%; max-width: 480px; text-align: center; margin: auto; }
         .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 25px 0; }
-        .opt-card { background: #f4f4f4; padding: 25px 10px; border-radius: 15px; border: 2px solid transparent; cursor: pointer; transition: 0.2s; }
-        .opt-card:active, .opt-card.active { border-color: var(--brand-red); background: #fff5f5; }
+        /* Mobile: Stack Options */
+        @media(max-width: 600px) { .opt-grid { grid-template-columns: 1fr; } }
+        
+        .opt-card { background: #f4f4f4; padding: 25px 10px; border-radius: 15px; border: 2px solid transparent; cursor: pointer; }
+        .opt-card.active, .opt-card:active { border-color: var(--brand-red); background: #fff0f0; }
         
         .input-field { width: 100%; padding: 18px; margin-bottom: 15px; border: 2px solid #eee; border-radius: 12px; font-size: 1.2rem; outline: none; background: #fcfcfc; }
         .input-field:focus { border-color: var(--brand-red); background: white; }
 
-        /* --- 3. MENU HEADER (Sticky) --- */
+        /* --- 3. FIXED MENU NAVIGATION (The Fix) --- */
+        /* This wrapper holds both Header and Categories so they stick together */
+        .sticky-nav-wrapper {
+            position: sticky; top: 0; z-index: 50;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
         .menu-header { 
-            background: white; padding: 15px 20px; 
+            padding: 15px 20px; 
             display: flex; justify-content: space-between; align-items: center; 
-            border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 50;
+            border-bottom: 1px solid #f0f0f0;
         }
         
-        /* Category Scroller */
         .cat-bar { 
-            background: white; padding: 10px 15px; 
+            padding: 10px 15px; 
             display: flex; gap: 10px; overflow-x: auto; 
-            scrollbar-width: none; border-bottom: 1px solid #eee;
-            position: sticky; top: 70px; z-index: 40; /* Sticks below header */
+            scrollbar-width: none; 
         }
         .cat-btn { 
             padding: 10px 20px; border-radius: 30px; 
-            background: #f0f0f0; border: none; color: #555; 
-            font-weight: 700; font-size: 0.9rem; white-space: nowrap; 
+            background: #f8f9fa; border: 1px solid #eee; color: #555; 
+            font-weight: 700; font-size: 0.95rem; white-space: nowrap; 
         }
-        .cat-btn.active { background: var(--dark); color: white; }
+        .cat-btn.active { background: var(--dark); color: white; border-color: var(--dark); }
 
-        /* --- MENU GRID (Auto-Fit) --- */
+        /* --- MENU GRID --- */
         .menu-grid { 
+            padding: 20px; 
+            padding-bottom: 160px; /* Big space for Cart Bar */
             display: grid; 
             /* Desktop: Auto columns | Mobile: 1 Column Force */
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 20px; padding: 20px; 
-            /* Huge padding bottom so Cart Bar never covers items */
-            padding-bottom: 150px; 
+            gap: 20px; 
+        }
+        /* Mobile Specific Grid Override */
+        @media (max-width: 600px) {
+            .menu-grid { grid-template-columns: 1fr; } /* Force single column on phones */
         }
 
-        /* --- FOOD CARD (Robust Layout) --- */
+        /* --- FOOD CARD --- */
         .food-card { 
             background: white; border-radius: 16px; 
             overflow: hidden; box-shadow: var(--shadow); 
             display: flex; flex-direction: column; 
-            border: 1px solid #f0f0f0;
+            border: 1px solid #eee;
         }
         .food-img { width: 100%; height: 200px; object-fit: cover; background: #eee; }
         .food-body { padding: 15px; flex: 1; display: flex; flex-direction: column; }
         
-        .food-name { 
-            font-family: 'Fredoka', sans-serif; 
-            font-size: 1.4rem; margin-bottom: 5px; 
-            color: var(--dark); line-height: 1.2; 
-        }
+        .food-name { font-family: 'Fredoka', sans-serif; font-size: 1.4rem; margin-bottom: 5px; color: var(--dark); line-height: 1.2; }
         .food-desc { font-size: 0.9rem; color: #777; margin-bottom: 15px; line-height: 1.4; flex: 1; }
         
-        .food-footer { 
-            display: flex; align-items: center; justify-content: space-between; 
-            margin-top: auto; flex-wrap: wrap; gap: 10px; 
-        }
+        .food-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
         .price-tag { font-weight: 800; font-size: 1.3rem; color: var(--brand-red); }
 
-        /* Qty Controls - BIG TOUCH TARGETS */
-        .actions { display: flex; align-items: center; gap: 8px; width: 100%; justify-content: space-between; }
-        
-        .qty-box { 
-            display: flex; align-items: center; background: #f0f0f0; 
-            border-radius: 10px; padding: 4px; gap: 2px;
-        }
+        /* Actions */
+        .actions { display: flex; align-items: center; gap: 10px; }
+        .qty-box { display: flex; align-items: center; background: #f0f0f0; border-radius: 8px; padding: 3px; }
         .q-btn { 
-            width: 45px; height: 45px; /* Big button for mobile */
-            border: none; background: white; 
-            border-radius: 8px; font-weight: 700; font-size: 1.2rem; 
-            cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            width: 40px; height: 40px; border: none; background: white; 
+            border-radius: 6px; font-weight: 700; font-size: 1.2rem; 
+            cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
             display: flex; align-items: center; justify-content: center;
         }
-        .q-btn:active { background: #ddd; transform: scale(0.95); }
+        .q-btn:active { background: #ddd; }
         .q-val { width: 35px; text-align: center; font-weight: 700; font-size: 1.1rem; }
         
         .add-btn { 
             background: var(--dark); color: white; border: none; 
-            padding: 0 25px; height: 45px; border-radius: 10px; 
+            padding: 0 25px; height: 45px; border-radius: 8px; 
             font-weight: 700; font-size: 1rem; cursor: pointer;
-            flex-grow: 1; /* Fills remaining space */
         }
         .add-btn:active { background: var(--brand-red); }
 
         /* --- CART FLOATING BAR --- */
         .cart-float { 
-            position: fixed; bottom: 25px; left: 15px; right: 15px; 
+            position: fixed; bottom: 20px; left: 15px; right: 15px; 
             background: var(--brand-red); color: white; 
             padding: 18px 25px; border-radius: 16px; 
             display: flex; justify-content: space-between; align-items: center; 
             box-shadow: 0 10px 30px rgba(227, 0, 15, 0.4); 
             z-index: 100; cursor: pointer; 
             max-width: 600px; margin: 0 auto;
-            transform: translateY(0); transition: transform 0.3s;
         }
-        .cart-float.hidden { transform: translateY(150px); display: flex !important; } /* Slide down instead of hide */
-        .cart-total { font-size: 1.3rem; font-weight: 800; }
+        .cart-total { font-size: 1.4rem; font-weight: 800; }
 
         /* --- MODAL --- */
         .modal-overlay { 
@@ -169,7 +160,7 @@
         .modal-box { 
             background: white; width: 100%; max-width: 450px; 
             padding: 25px; border-radius: 20px; 
-            max-height: 90vh; display: flex; flex-direction: column; 
+            max-height: 85vh; display: flex; flex-direction: column; 
             box-shadow: 0 20px 50px rgba(0,0,0,0.4);
         }
 
@@ -180,27 +171,18 @@
 
         /* Receipt */
         .receipt-paper { 
-            background: #fff; padding: 20px; border: 1px dashed #333; 
+            background: #fff; padding: 20px; border: 1px dashed #ccc; 
             font-family: 'Courier New', monospace; text-align: center; 
             font-size: 0.9rem; margin-top: 10px; 
         }
-        .r-row { display: flex; justify-content: space-between; margin: 5px 0; text-align: left; }
+        .r-row { display: flex; justify-content: space-between; margin: 4px 0; text-align: left; }
         .r-div { border-bottom: 1px dashed #000; margin: 10px 0; }
-        .r-total { font-weight: 800; font-size: 1.2rem; margin-top: 5px; }
+        .r-total { font-weight: 800; font-size: 1.2rem; }
 
-        /* --- MOBILE MEDIA QUERY OVERRIDES --- */
-        @media (max-width: 600px) {
-            .opt-grid { grid-template-columns: 1fr; } /* Stack dine in/take out */
-            .menu-grid { grid-template-columns: 1fr; } /* Force 1 column items */
-            .food-img { height: 200px; }
-            .card-box { width: 100%; padding: 25px 20px; }
-            .actions { margin-top: 10px; } /* Push buttons slightly down */
-        }
-
-        .hidden-trigger { position: absolute; top:0; left:0; width:60px; height:60px; z-index:999; }
         /* Admin */
         .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; height: 100%; overflow: hidden; }
         @media(max-width:768px){ .admin-grid { grid-template-columns: 1fr; overflow-y: auto; } }
+        .hidden-trigger { position: absolute; top:0; left:0; width:60px; height:60px; z-index:999; }
     </style>
 </head>
 <body>
@@ -261,19 +243,22 @@
     </div>
 
     <div id="screen-menu" class="screen">
-        <div class="menu-header">
-            <div>
-                <div id="disp-name" style="font-weight:800; font-size:1.1rem;">Guest</div>
-                <div id="disp-info" style="font-size:0.8rem; background:#eee; padding:2px 8px; border-radius:4px; display:inline-block;">--</div>
+        
+        <div class="sticky-nav-wrapper">
+            <div class="menu-header">
+                <div>
+                    <div id="disp-name" style="font-weight:800; font-size:1.1rem;">Guest</div>
+                    <div id="disp-info" style="font-size:0.8rem; background:#f4f4f4; padding:2px 8px; border-radius:4px; display:inline-block;">--</div>
+                </div>
+                <button class="btn btn-outline" style="font-size:0.8rem; padding:8px 12px;" onclick="app.changeOrderType()">Change</button>
             </div>
-            <button class="btn btn-outline" style="font-size:0.8rem; padding:8px 12px;" onclick="app.changeOrderType()">Change</button>
-        </div>
 
-        <div class="cat-bar">
-            <button class="cat-btn active" onclick="app.filter('all', this)">All Items</button>
-            <button class="cat-btn" onclick="app.filter('meal', this)">Meals</button>
-            <button class="cat-btn" onclick="app.filter('drink', this)">Drinks</button>
-            <button class="cat-btn" onclick="app.filter('side', this)">Sides</button>
+            <div class="cat-bar">
+                <button class="cat-btn active" onclick="app.filter('all', this)">All Items</button>
+                <button class="cat-btn" onclick="app.filter('meal', this)">Meals</button>
+                <button class="cat-btn" onclick="app.filter('drink', this)">Drinks</button>
+                <button class="cat-btn" onclick="app.filter('side', this)">Sides</button>
+            </div>
         </div>
 
         <div id="menu-grid" class="menu-grid"></div>
