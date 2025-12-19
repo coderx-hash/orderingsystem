@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gelo Kiosk - Mobile Ready</title>
+    <title>Gelo Kiosk - Mobile Fixed</title>
     
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,10 +14,10 @@
             --brand-red: #e3000f;
             --brand-yellow: #f8c026;
             --dark: #1a1a1a;
-            --gray-bg: #f2f4f6;
+            --gray-bg: #f4f6f8;
             --white: #ffffff;
-            --shadow-card: 0 4px 15px rgba(0,0,0,0.08);
-            --radius: 16px;
+            --shadow-card: 0 8px 25px rgba(0,0,0,0.08);
+            --radius: 20px;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -33,150 +33,173 @@
 
         /* --- BACKGROUND --- */
         .bg-animation { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: #fff; }
-        .blob { position: absolute; filter: blur(80px); opacity: 0.5; }
-        .blob-1 { top: -10%; left: -10%; width: 80vw; height: 80vw; background: #ffebee; animation: float 10s infinite alternate; }
-        .blob-2 { bottom: -10%; right: -10%; width: 80vw; height: 80vw; background: #fffde7; animation: float 10s infinite alternate-reverse; }
-        @keyframes float { from { transform: translate(0,0); } to { transform: translate(20px, 20px); } }
+        .blob { position: absolute; filter: blur(90px); opacity: 0.5; }
+        .blob-1 { top: -10%; left: -10%; width: 60vw; height: 60vw; background: #ffebee; animation: float 10s infinite alternate; }
+        .blob-2 { bottom: -10%; right: -10%; width: 60vw; height: 60vw; background: #fffde7; animation: float 10s infinite alternate-reverse; }
+        @keyframes float { from { transform: translate(0,0); } to { transform: translate(40px, 40px); } }
 
-        /* --- SCREEN SETUP --- */
+        /* --- UTILS --- */
         .hidden { display: none !important; }
         .flex-center { display: flex; justify-content: center; align-items: center; flex-direction: column; }
         
+        /* Main Screen Container */
         .screen { 
             position: absolute; inset: 0; display: none; z-index: 10; 
             flex-direction: column; animation: fade 0.3s ease; 
-            overflow-y: auto; overflow-x: hidden;
-            -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+            /* Critical for mobile scrolling */
+            overflow-y: auto; 
+            overflow-x: hidden;
         }
         .screen.active { display: flex; }
-        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fade { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
         /* --- BUTTONS --- */
-        .btn { border: none; padding: 14px 24px; border-radius: 50px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: 'DM Sans', sans-serif; transition: 0.2s; font-size: 1rem; width: auto; }
+        .btn { border: none; padding: 14px 28px; border-radius: 50px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: 'DM Sans', sans-serif; transition: 0.2s; font-size: 1rem; }
         .btn:active { transform: scale(0.95); }
-        .btn-primary { background: var(--brand-red); color: white; box-shadow: 0 4px 12px rgba(227, 0, 15, 0.3); }
+        .btn-primary { background: var(--brand-red); color: white; box-shadow: 0 6px 20px rgba(227, 0, 15, 0.3); }
         .btn-outline { background: white; border: 2px solid #ddd; color: #555; }
         
         /* --- 1. INTRO SCREEN --- */
-        #screen-intro { background: var(--dark); color: white; padding: 20px; text-align: center; }
-        .brand-main { font-family: 'Fredoka', sans-serif; font-size: clamp(3rem, 10vw, 5rem); color: var(--brand-yellow); margin: 0; line-height: 1.1; }
-        .tap-icon { font-size: clamp(4rem, 15vw, 6rem); margin: 30px 0; animation: tap 1.5s infinite; color: var(--white); }
-        .tap-text { font-size: 1.5rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+        #screen-intro { background: var(--dark); color: white; text-align: center; }
+        .brand-wrapper { margin-bottom: 40px; }
+        .brand-sub { font-size: 1.2rem; opacity: 0.8; letter-spacing: 1px; }
+        .brand-main { font-family: 'Fredoka', sans-serif; font-size: 4rem; color: var(--brand-yellow); margin: 0; line-height: 1; text-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        
+        .tap-icon { font-size: 5rem; margin-bottom: 20px; animation: tap 1.5s infinite; color: var(--white); }
+        .tap-text { font-size: 1.5rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; }
         @keyframes tap { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
 
-        /* --- 2. CARD BOX (CONTAINER) --- */
+        /* --- 2. ORDER TYPE & DETAILS --- */
         .card-box { 
-            background: white; 
-            padding: 30px 20px; 
-            border-radius: 25px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-            width: 90%; 
-            max-width: 500px; 
-            text-align: center; 
-            margin: auto;
+            background: white; padding: 40px; border-radius: 30px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15); 
+            width: 90%; max-width: 550px; text-align: center; margin: auto;
         }
+        
+        .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 40px 0; }
+        .opt-card { background: #fafafa; padding: 40px 20px; border-radius: 20px; border: 3px solid transparent; cursor: pointer; transition: 0.2s; }
+        .opt-card:active, .opt-card:hover { border-color: var(--brand-red); background: #fff0f0; }
+        .opt-icon { font-size: 4rem; margin-bottom: 15px; color: var(--brand-red); }
+        .opt-title { font-size: 1.5rem; font-weight: 800; }
 
-        /* Responsive Option Grid (Stack on Mobile) */
-        .option-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; /* Default: Side by side */
-            gap: 15px; 
-            margin: 25px 0; 
-        }
-        .opt-card { background: #fafafa; padding: 25px 15px; border-radius: 16px; border: 2px solid transparent; cursor: pointer; transition: 0.2s; }
-        .opt-card:hover, .opt-card:active { border-color: var(--brand-red); background: #fff5f5; }
-        .opt-icon { font-size: 3rem; margin-bottom: 10px; color: var(--brand-red); }
-        .opt-title { font-size: 1.2rem; font-weight: 800; }
-
-        .input-field { width: 100%; padding: 15px; margin-bottom: 15px; border: 2px solid #eee; border-radius: 12px; font-size: 1.1rem; outline: none; background: #fcfcfc; }
+        .input-field { width: 100%; padding: 20px; margin-bottom: 20px; border: 2px solid #eee; border-radius: 15px; font-size: 1.3rem; outline: none; background: #fcfcfc; }
         .input-field:focus { border-color: var(--brand-red); background: white; }
 
         /* --- 3. MENU SCREEN --- */
         .menu-header { 
-            background: rgba(255,255,255,0.95); padding: 15px 20px; 
+            background: rgba(255,255,255,0.95); padding: 20px 30px; 
             display: flex; justify-content: space-between; align-items: center; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 50; flex-shrink: 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05); z-index: 50; 
+            flex-shrink: 0; /* Important: Don't shrink header */
         }
-        .guest-info h2 { margin: 0; font-size: 1.2rem; font-weight: 800; }
+        .guest-info h2 { margin: 0; font-size: 1.5rem; font-weight: 800; }
+        .guest-badge { font-size: 1rem; background: var(--dark); color: white; padding: 5px 12px; border-radius: 8px; font-weight: 700; margin-top: 5px; display: inline-block; }
 
-        .cat-bar { display: flex; gap: 10px; padding: 10px 20px; overflow-x: auto; scrollbar-width: none; flex-shrink: 0; }
-        .cat-btn { padding: 8px 20px; border-radius: 30px; background: white; border: 1px solid #ddd; color: #777; font-weight: 700; font-size: 0.9rem; white-space: nowrap; transition: 0.2s; }
+        .cat-bar { display: flex; gap: 15px; padding: 15px 30px; overflow-x: auto; scrollbar-width: none; flex-shrink: 0; }
+        .cat-btn { padding: 10px 25px; border-radius: 40px; background: white; border: 1px solid #ddd; color: #777; font-weight: 700; font-size: 1rem; white-space: nowrap; transition: 0.2s; }
         .cat-btn.active { background: var(--dark); color: white; border-color: var(--dark); }
 
-        /* RESPONSIVE MENU GRID */
+        /* --- MENU GRID (RESPONSIVE FIX) --- */
         .menu-grid { 
-            padding: 15px 20px 120px; /* Bottom padding for cart bar */
+            padding: 10px 30px 140px; 
             overflow-y: auto; 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Desktop */
-            gap: 20px; 
-            flex: 1; 
+            /* Desktop Default */
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 30px; 
+            flex: 1;
         }
 
-        /* --- FOOD CARDS --- */
-        .food-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-card); display: flex; flex-direction: column; position: relative; border: 1px solid #f0f0f0; }
-        .food-img { width: 100%; height: 180px; object-fit: cover; background: #eee; }
-        .food-content { padding: 15px; flex: 1; display: flex; flex-direction: column; }
-        .food-title { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; margin-bottom: 4px; color: var(--dark); line-height: 1.1; }
-        .food-desc { font-size: 0.85rem; color: #888; line-height: 1.4; margin-bottom: 15px; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        /* --- FOOD CARDS (WHITE DESIGN) --- */
+        .food-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-card); display: flex; flex-direction: column; position: relative; border: 1px solid #f0f0f0; transition: transform 0.2s; }
+        .food-card:active { transform: scale(0.98); }
+        .food-img { width: 100%; height: 200px; object-fit: cover; background: #eee; }
+        .food-content { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+        .food-title { font-family: 'Fredoka', sans-serif; font-size: 1.5rem; margin-bottom: 5px; color: var(--dark); line-height: 1.1; }
+        .food-desc { font-size: 0.95rem; color: #888; line-height: 1.4; margin-bottom: 20px; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         
-        .food-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; gap: 10px; }
-        .food-price { font-weight: 800; font-size: 1.3rem; color: var(--brand-red); }
+        .food-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+        .food-price { font-weight: 800; font-size: 1.5rem; color: var(--brand-red); }
 
-        /* Controls */
-        .qty-wrapper { display: flex; align-items: center; gap: 5px; background: #f4f4f4; padding: 3px; border-radius: 10px; }
-        .qty-btn { width: 32px; height: 32px; border-radius: 8px; border: none; background: white; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .qty-display { font-size: 1.1rem; font-weight: 800; width: 25px; text-align: center; }
-        .add-btn { background: var(--dark); color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; flex-grow: 1; }
+        .qty-wrapper { display: flex; align-items: center; gap: 8px; background: #f4f4f4; padding: 5px; border-radius: 12px; }
+        .qty-btn { width: 35px; height: 35px; border-radius: 10px; border: none; background: white; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .qty-display { font-size: 1.2rem; font-weight: 800; width: 30px; text-align: center; }
+        .add-btn { background: var(--dark); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; margin-left: 10px; }
 
         /* --- CART FLOAT --- */
         .cart-bar { 
-            position: absolute; bottom: 20px; left: 15px; right: 15px; 
+            position: absolute; bottom: 30px; left: 30px; right: 30px; 
             background: var(--brand-red); color: white; 
-            padding: 15px 25px; border-radius: 16px; 
+            padding: 15px 30px; border-radius: 20px; 
             display: flex; justify-content: space-between; align-items: center; 
-            box-shadow: 0 10px 30px rgba(227, 0, 15, 0.4); 
+            box-shadow: 0 15px 40px rgba(227, 0, 15, 0.4); 
             z-index: 100; cursor: pointer; 
             animation: slideUp 0.3s ease;
             max-width: 600px; margin: 0 auto;
         }
-        .cart-total { font-size: 1.4rem; font-weight: 800; }
+        .cart-total { font-size: 1.5rem; font-weight: 800; }
         @keyframes slideUp { from { transform: translateY(100px); } to { transform: translateY(0); } }
 
         /* --- MODAL --- */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 20px; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; display: none; justify-content: center; align-items: center; backdrop-filter: blur(8px); padding: 20px; }
         .modal-box { 
-            background: white; width: 100%; max-width: 450px; 
-            padding: 25px; border-radius: 20px; 
+            background: white; width: 100%; max-width: 500px; 
+            padding: 30px; border-radius: 30px; 
             max-height: 90vh; display: flex; flex-direction: column; 
             animation: popIn 0.3s;
         }
         @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        /* --- RECEIPT --- */
-        .receipt { font-family: 'Courier New', monospace; background: #fff; padding: 15px; border: 1px dashed #333; text-align: center; margin-top: 10px; font-size: 0.85rem; }
-        .r-row { display: flex; justify-content: space-between; margin: 4px 0; text-align: left; }
-        .r-total-row { border-top: 2px dashed #000; margin-top: 10px; padding-top: 10px; font-size: 1.1rem; font-weight: 800; display: flex; justify-content: space-between; }
+        .review-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
 
-        /* --- MOBILE SPECIFIC CSS --- */
-        @media (max-width: 600px) {
-            .option-grid { grid-template-columns: 1fr; gap: 10px; } /* Stack option buttons */
+        /* --- RECEIPT (UNCHANGED) --- */
+        .receipt { font-family: 'Courier New', monospace; background: #fff; padding: 25px; border: 1px dashed #333; text-align: center; margin-top: 10px; position: relative; }
+        .r-header { border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 10px; }
+        .r-row { display: flex; justify-content: space-between; font-size: 0.85rem; margin: 4px 0; text-align: left; }
+        .r-total-row { border-top: 2px dashed #000; margin-top: 10px; padding-top: 10px; font-size: 1.2rem; font-weight: 800; display: flex; justify-content: space-between; }
+
+        /* =========================================
+           MOBILE OPTIMIZATIONS (The Fix)
+           ========================================= */
+        @media (max-width: 768px) {
+            /* Intro */
+            .brand-main { font-size: 3rem; }
+            .tap-icon { font-size: 4rem; }
+
+            /* Card Box */
+            .card-box { width: 95%; padding: 25px 20px; }
+            .option-grid { grid-template-columns: 1fr; gap: 15px; } /* Stack Buttons */
             .opt-card { padding: 20px; display: flex; align-items: center; justify-content: center; gap: 15px; }
-            .opt-icon { margin-bottom: 0; font-size: 2.5rem; }
-            
-            /* Make menu cards stacked (1 column) on mobile */
-            .menu-grid { grid-template-columns: 1fr; gap: 15px; padding: 15px 15px 100px; }
-            .food-img { height: 160px; }
-            
-            .cart-bar { left: 10px; right: 10px; bottom: 15px; padding: 12px 20px; }
-            
-            .brand-main { font-size: 3.5rem; }
-            .tap-icon { font-size: 5rem; }
+            .opt-icon { margin-bottom: 0; font-size: 3rem; }
+            .opt-title { font-size: 1.5rem; }
+
+            /* Menu Header */
+            .menu-header { padding: 15px; }
+            .cat-bar { padding: 10px 15px; }
+
+            /* MENU GRID: FORCE 1 COLUMN */
+            .menu-grid {
+                grid-template-columns: 1fr; /* Single Column */
+                padding: 10px 15px 120px;
+                gap: 20px;
+            }
+
+            /* Food Card - Mobile Adjustments */
+            .food-img { height: 180px; } /* Proportional Height */
+            .food-content { padding: 15px; }
+            .food-title { font-size: 1.3rem; }
+            .food-desc { font-size: 0.9rem; margin-bottom: 15px; }
+            .food-price { font-size: 1.3rem; }
+
+            /* Cart Bar */
+            .cart-bar { left: 15px; right: 15px; bottom: 20px; padding: 12px 20px; }
+            .cart-total { font-size: 1.3rem; }
         }
 
-        .hidden-trigger { position: absolute; top:0; left:0; width:60px; height:60px; z-index:999; }
-        .admin-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; height: 100%; overflow: hidden; }
+        /* Admin Layout */
+        .admin-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; height: 100%; overflow: hidden; }
         @media (max-width: 768px) { .admin-layout { grid-template-columns: 1fr; overflow-y: auto; } }
+        .hidden-trigger { position: absolute; top:0; left:0; width:80px; height:80px; z-index:999; }
     </style>
 </head>
 <body>
@@ -190,7 +213,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, serverTimestamp, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         
-        // API KEY
         const firebaseConfig = { apiKey: "AIzaSyDxmEuSOtR_SHPZu2LWCc6HG5U5HfgUlPM", authDomain: "orderingsystem-9dcd9.firebaseapp.com", projectId: "orderingsystem-9dcd9", storageBucket: "orderingsystem-9dcd9.firebasestorage.app", messagingSenderId: "879405920262", appId: "1:879405920262:web:d677b534a4f374a4aa1387", measurementId: "G-JHLBK4QB1B" };
         
         const app = initializeApp(firebaseConfig);
@@ -210,7 +232,7 @@
 
     <div id="screen-type" class="screen flex-center">
         <div class="card-box">
-            <h2 style="font-size:1.8rem; margin:0; font-family:'Fredoka'">Where to eat?</h2>
+            <h2 style="font-size:2rem; margin:0; font-family:'Fredoka'">Where to eat?</h2>
             <div class="option-grid">
                 <div class="opt-card" onclick="app.selectType('dine-in')">
                     <div class="opt-icon"><i class="fas fa-utensils"></i></div>
@@ -221,24 +243,24 @@
                     <div class="opt-title">Take Out</div>
                 </div>
             </div>
-            <button class="btn btn-outline" style="width:100%; padding:15px;" onclick="app.nav('intro')">Cancel</button>
+            <button class="btn btn-outline" style="width:100%; font-size:1.1rem; padding:15px;" onclick="app.nav('intro')">Cancel</button>
         </div>
     </div>
 
     <div id="screen-details" class="screen flex-center">
         <div class="card-box" style="text-align:left;">
-            <h2 style="margin-top:0; font-size:1.6rem; font-family:'Fredoka'">Your Details</h2>
+            <h2 style="margin-top:0; font-size:1.8rem; font-family:'Fredoka'">Your Details</h2>
             
-            <label style="font-weight:bold; font-size:0.9rem; display:block; margin-bottom:5px;">Name / Nickname</label>
+            <label style="font-weight:bold; font-size:1rem; display:block; margin-bottom:8px;">Name / Nickname</label>
             <input type="text" id="inp-name" class="input-field" placeholder="Ex. Juan" autocomplete="off">
             
             <div id="group-table">
-                <label style="font-weight:bold; font-size:0.9rem; display:block; margin-bottom:5px;">Table Number</label>
+                <label style="font-weight:bold; font-size:1rem; display:block; margin-bottom:8px;">Table Number</label>
                 <input type="number" id="inp-table" class="input-field" placeholder="#" style="width:100px; font-weight:bold; color:var(--brand-red);">
             </div>
 
-            <button class="btn btn-primary" style="width:100%; padding:15px; font-size:1.1rem;" onclick="app.confirmDetails()">PROCEED TO MENU</button>
-            <button class="btn btn-outline" style="width:100%; margin-top:10px; padding:12px;" onclick="app.nav('type')">Back</button>
+            <button class="btn btn-primary" style="width:100%; padding:18px; font-size:1.2rem;" onclick="app.confirmDetails()">PROCEED TO MENU</button>
+            <button class="btn btn-outline" style="width:100%; margin-top:15px; padding:15px;" onclick="app.nav('type')">Back</button>
         </div>
     </div>
 
@@ -248,7 +270,7 @@
                 <h2 id="disp-name">Guest</h2>
                 <div id="disp-info" class="guest-badge">--</div>
             </div>
-            <button class="btn btn-outline" style="font-size:0.9rem; padding:8px 12px;" onclick="app.changeOrderType()">
+            <button class="btn btn-outline" style="font-size:0.9rem; padding:8px 15px;" onclick="app.changeOrderType()">
                 <i class="fas fa-exchange-alt"></i> Change
             </button>
         </div>
@@ -267,7 +289,7 @@
                 <span style="font-size:0.8rem; opacity:0.9; font-weight:bold">TOTAL ORDER</span>
                 <span class="cart-total">₱<span id="cart-total">0</span></span>
             </div>
-            <div style="font-weight:800; font-size:1.1rem; display:flex; align-items:center; gap:10px;">
+            <div style="font-weight:800; font-size:1.2rem; display:flex; align-items:center; gap:10px;">
                 <span style="background:rgba(255,255,255,0.2); padding:5px 12px; border-radius:10px;" id="cart-count">0</span>
                 <span>REVIEW</span> <i class="fas fa-chevron-up"></i>
             </div>
@@ -276,42 +298,50 @@
 
     <div id="modal-checkout" class="modal-overlay">
         <div class="modal-box">
-            <div id="view-review" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+            <div id="view-review" style="display:flex; flex-direction:column; height:100%;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h2 style="margin:0; font-size:1.5rem; font-family:'Fredoka'">Review Order</h2>
-                    <button class="btn btn-outline" style="padding:5px 10px;" onclick="app.closeModal()"><i class="fas fa-times"></i></button>
+                    <h2 style="margin:0; font-size:1.8rem; font-family:'Fredoka'">Review Order</h2>
+                    <button class="btn btn-outline" style="padding:8px;" onclick="app.closeModal()"><i class="fas fa-times"></i></button>
                 </div>
                 
-                <div id="summary-list" style="overflow-y:auto; flex:1; border-top:2px dashed #eee; border-bottom:2px dashed #eee; margin-bottom:15px; padding-right:5px;"></div>
+                <div id="summary-list" style="overflow-y:auto; flex:1; border-top:2px dashed #eee; border-bottom:2px dashed #eee; margin-bottom:20px; padding-right:5px;"></div>
                 
-                <div style="display:flex; justify-content:space-between; font-size:1.5rem; font-weight:800; margin-bottom:15px;">
+                <div style="display:flex; justify-content:space-between; font-size:1.8rem; font-weight:800; margin-bottom:20px;">
                     <span>Total</span> <span style="color:var(--brand-red)">₱<span id="sum-total">0</span></span>
                 </div>
-                <button id="btn-pay" class="btn btn-primary" style="width:100%; padding:15px; font-size:1.2rem;" onclick="app.processOrder()">CONFIRM ORDER</button>
+                <button id="btn-pay" class="btn btn-primary" style="width:100%; padding:18px; font-size:1.3rem;" onclick="app.processOrder()">CONFIRM ORDER</button>
             </div>
             
             <div id="view-receipt" class="hidden" style="text-align:center; overflow-y:auto;">
-                <i class="fas fa-check-circle" style="font-size:3.5rem; color:#27ae60; margin-bottom:10px;"></i>
+                <i class="fas fa-check-circle" style="font-size:4rem; color:#27ae60; margin-bottom:15px;"></i>
                 <h2 style="margin:0; color:#27ae60; font-family:'Fredoka'">Order Sent!</h2>
                 
                 <div id="receipt-capture" class="receipt">
-                    <div style="font-weight:900; font-size:1.1rem; margin-bottom:5px;">GELO KIOSK ORDERING</div>
+                    <div class="r-header">
+                        <div style="font-weight:900; font-size:1.2rem;">GELO KIOSK ORDERING</div>
+                        <div style="font-size:0.8rem;">Official Receipt</div>
+                    </div>
+                    
                     <div class="r-row"><span>Date:</span> <span id="r-date"></span></div>
                     <div class="r-row"><span>Order ID:</span> <span id="r-queue"></span></div>
                     <div class="r-row"><span>Customer:</span> <span id="r-name"></span></div>
                     <div class="r-row"><span>Type:</span> <span id="r-type" style="font-weight:bold"></span></div>
                     <div class="r-row" id="r-table-row"><span>Table:</span> <span id="r-table"></span></div>
-                    <div style="border-bottom:1px dashed #000; margin:8px 0;"></div>
+                    <div style="border-bottom:1px dashed #000; margin:10px 0;"></div>
                     <div class="r-row" style="font-weight:bold;"><span>QTY & ITEM</span> <span>AMT</span></div>
-                    <div style="border-bottom:1px dashed #000; margin:5px 0 8px 0;"></div>
+                    <div style="border-bottom:1px dashed #000; margin:5px 0 10px 0;"></div>
                     <div id="r-items"></div>
                     <div class="r-total-row">
                         <span>TOTAL DUE</span> <span>₱<span id="r-total"></span></span>
                     </div>
+                    <div style="margin-top:20px; font-size:0.8rem;">
+                        Please pay at the counter.<br>
+                        Thank you for dining with us!
+                    </div>
                 </div>
 
                 <button class="btn btn-primary" style="width:100%; margin-top:15px; background:var(--dark);" onclick="app.downloadReceipt()">SAVE RECEIPT</button>
-                <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="location.reload()">New Order</button>
+                <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="location.reload()">Place New Order</button>
             </div>
         </div>
     </div>
@@ -337,9 +367,9 @@
     </div>
 
     <div id="screen-monitor" class="screen flex-center" style="background:#111; color:white; text-align:center;" ondblclick="app.nav('admin')">
-        <div style="font-size:clamp(2rem, 5vw, 3rem); color:#777; letter-spacing:5px; font-weight:700;">NOW SERVING</div>
-        <div id="mon-q" style="font-size:clamp(6rem, 20vw, 12rem); font-weight:800; color:var(--brand-yellow); line-height:1; margin:20px 0;">--</div>
-        <div id="mon-meta" style="font-size:clamp(1.5rem, 4vw, 2.5rem);">Waiting...</div>
+        <div style="font-size:3rem; color:#777; letter-spacing:8px; font-weight:700;">NOW SERVING</div>
+        <div id="mon-q" style="font-size:12rem; font-weight:800; color:var(--brand-yellow); line-height:1; margin:30px 0;">--</div>
+        <div id="mon-meta" style="font-size:2rem;">Waiting...</div>
     </div>
 
     <script>
@@ -412,7 +442,7 @@
                             <div class="food-desc">${p.desc}</div>
                             <div class="food-footer">
                                 <div class="food-price">₱${p.price}</div>
-                                <div style="display:flex; align-items:center; gap:5px; flex-wrap:nowrap;">
+                                <div style="display:flex; align-items:center; gap:5px;">
                                     <div class="qty-wrapper">
                                         <button class="qty-btn" onclick="app.setQty(${p.id}, -1)">-</button>
                                         <div class="qty-display" id="qty-${p.id}">${app.state.qtys[p.id]}</div>
@@ -518,7 +548,6 @@
                 document.getElementById('view-review').classList.add('hidden');
                 document.getElementById('view-receipt').classList.remove('hidden');
                 
-                // DATE & TIME
                 const now = new Date();
                 const dateStr = now.toLocaleDateString();
                 const timeStr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
@@ -533,7 +562,6 @@
                 document.getElementById('r-queue').innerText = d.queue;
                 document.getElementById('r-total').innerText = d.total;
                 
-                // ITEMIZED LIST
                 const grp = {}; 
                 d.items.forEach(i=>{ if(!grp[i.name]) grp[i.name]={count:0, price:i.price}; grp[i.name].count++; });
                 
@@ -571,7 +599,7 @@
                                 <span>#${d.queue}</span> <span>${d.type==='take-out'?'TakeOut':'T-'+d.table}</span>
                             </div>
                             <div style="font-size:1rem; margin-top:5px;">${d.customer}</div>
-                            <div style="margin:5px 0; font-size:0.8rem; color:#666;">${d.items.length} items</div>
+                            <div style="margin:5px 0; font-size:0.9rem; color:#666;">${d.items.length} items</div>
                             ${d.status==='pending' ? `<button class="btn btn-primary" onclick="app.setStatus('${id}','ready')" style="padding:6px; width:100%; font-size:0.9rem;">Mark Ready</button>` : 
                             `<button class="btn btn-outline" onclick="app.setStatus('${id}','served')" style="padding:6px; width:100%; font-size:0.9rem;">Done</button>`}
                         </div>`;
