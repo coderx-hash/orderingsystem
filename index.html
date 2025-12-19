@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelo's Kiosk - Receipt System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --brand-red: #e3000f;
+            --brand-yellow: #f8c026;
+            --dark: #2d3436;
+            --light: #f4f6f8;
+            --shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        body { font-family: 'Poppins', sans-serif; background-color: var(--light); margin: 0; height: 100vh; overflow: hidden; user-select: none; }
+
+        /* --- SCREEN SETUP --- */
+        .screen { position: absolute; inset: 0; background: var(--light); display: none; flex-direction: column; animation: fadeIn 0.4s ease; }
+        .screen.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        /* --- INTRO --- */
+        #screen-intro { background: linear-gradient(135deg, var(--brand-red), #b9000c); color: white; justify-content: center; align-items: center; text-align: center; }
+        .tap-btn { background: white; color: var(--brand-red); padding: 15px 50px; border-radius: 50px; font-size: 2rem; font-weight: 800; cursor: pointer; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        /* --- MENU --- */
+        .kiosk-header { background: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .category-scroll { display: flex; gap: 10px; padding: 15px 30px; overflow-x: auto; }
+        .cat-btn { border: none; background: white; padding: 10px 25px; border-radius: 30px; font-weight: 600; color: #777; cursor: pointer; }
+        .cat-btn.active { background: var(--brand-red); color: white; }
+        
+        .menu-grid { flex: 1; overflow-y: auto; padding: 20px 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 20px; }
+        .food-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: var(--shadow); position: relative; cursor: pointer; display: flex; flex-direction: column; }
+        .food-card:active { transform: scale(0.97); }
+        .food-img { width: 100%; height: 150px; object-fit: cover; }
+        .food-info { padding: 15px; flex: 1; }
+        .add-icon { position: absolute; bottom: 15px; right: 15px; background: var(--brand-red); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+        .cart-bar { background: white; padding: 20px 40px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; z-index: 50; }
+        .btn-checkout { background: var(--brand-red); color: white; border: none; padding: 15px 50px; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
+
+        /* --- MODAL (Summary & Receipt) --- */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-box { background: white; padding: 30px; border-radius: 20px; width: 450px; max-height: 90vh; overflow-y: auto; text-align: center; position: relative; }
+        
+        /* Summary Table */
+        .summary-table { width: 100%; text-align: left; border-collapse: collapse; margin: 20px 0; }
+        .summary-table th { border-bottom: 2px solid #eee; padding: 10px; color: #777; }
+        .summary-table td { padding: 10px; border-bottom: 1px dashed #eee; font-weight: 600; }
+        .summary-total { font-size: 1.5rem; font-weight: 800; color: var(--brand-red); text-align: right; margin-top: 20px; }
+
+        /* Receipt Style */
+        .receipt-container { background: white; padding: 20px; border: 1px solid #ddd; font-family: 'Courier New', monospace; color: #333; margin: 0 auto; width: 320px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .r-header { text-align: center; margin-bottom: 15px; border-bottom: 2px dashed #333; padding-bottom: 10px; }
+        .r-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem; }
+        .r-total { border-top: 2px dashed #333; margin-top: 10px; padding-top: 10px; font-weight: bold; font-size: 1.1rem; display: flex; justify-content: space-between; }
+        .r-footer { text-align: center; margin-top: 20px; font-size: 0.8rem; }
+
+        /* Buttons */
+        .btn-confirm { width: 100%; background: var(--brand-red); color: white; padding: 15px; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-cancel { width: 100%; background: #eee; color: #333; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-download { background: var(--dark); color: white; display: flex; justify-content: center; align-items: center; gap: 10px; }
+
+        /* Utility */
+        .hidden { display: none !important; }
+        .secret { position: absolute; bottom: 0; right: 0; width: 60px; height: 60px; z-index: 200; }
+        
+        /* Admin Styles */
+        .admin-layout { display: flex; height: 100%; }
+        .sidebar { width: 250px; background: #333; color: white; padding: 20px; display: flex; flex-direction: column; }
+        .board { flex: 1; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .col { background: #eee; border-radius: 10px; padding: 15px; overflow-y: auto; }
+        .ticket { background: white; padding: 15px; margin-bottom: 10px; border-left: 5px solid #ccc; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <div id="screen-intro" class="screen active" onclick="app.start()">
+        <h1 style="font-family:'Fredoka'; font-size:4rem; margin-bottom:10px;">🍔 Gelo's Express</h1>
+        <div class="tap-btn">TAP TO START</div>
+        <div class="secret" ondblclick="app.toggleAdmin()"></div>
+    </div>
+
+    <div id="screen-table" class="screen" style="justify-content:center; align-items:center; background:rgba(0,0,0,0.8);">
+        <div class="modal-box">
+            <h2>Table Number</h2>
+            <input type="number" id="input-table" style="font-size:3rem; width:100px; text-align:center; margin:20px 0; border-radius:10px; border:3px solid #ddd;" placeholder="#">
+            <button class="btn-confirm" onclick="app.confirmTable()">START ORDERING</button>
+        </div>
+    </div>
+
+    <div id="screen-menu" class="screen">
+        <div class="kiosk-header">
+            <h3>🍔 MENU</h3>
+            <div style="background:#f8c026; padding:5px 15px; border-radius:20px; font-weight:bold;">TABLE <span id="disp-table">--</span></div>
+        </div>
+        
+        <div class="category-scroll">
+            <button class="cat-btn active" onclick="app.filter('all', this)">All</button>
+            <button class="cat-btn" onclick="app.filter('meal', this)">Meals</button>
+            <button class="cat-btn" onclick="app.filter('drink', this)">Drinks</button>
+            <button class="cat-btn" onclick="app.filter('side', this)">Sides</button>
+        </div>
+
+        <div id="menu-grid" class="menu-grid"></div>
+
+        <div class="cart-bar">
+            <div>
+                <small>TOTAL</small>
+                <div style="font-size:1.5rem; font-weight:800">₱<span id="cart-total">0</span></div>
+            </div>
+            <button class="btn-checkout" onclick="app.showSummary()">CHECKOUT (<span id="cart-count">0</span>)</button>
+        </div>
+    </div>
+
+    <div id="modal-checkout" class="modal-overlay">
+        <div class="modal-box">
+            
+            <div id="view-summary">
+                <h2>📝 Order Summary</h2>
+                <table class="summary-table">
+                    <thead><tr><th>Qty</th><th>Item</th><th>Price</th></tr></thead>
+                    <tbody id="summary-list"></tbody>
+                </table>
+                <div class="summary-total">Total: ₱<span id="sum-total">0</span></div>
+                <button class="btn-confirm" onclick="app.processOrder()">CONFIRM ORDER</button>
+                <button class="btn-cancel" onclick="app.closeModal()">BACK TO MENU</button>
+            </div>
+
+            <div id="view-receipt" class="hidden">
+                <h2 style="color:var(--brand-green)">✅ Order Success!</h2>
+                <p>Please save your receipt.</p>
+                
+                <div id="receipt-capture" class="receipt-container">
+                    <div class="r-header">
+                        <div style="font-weight:bold; font-size:1.2rem">GELO'S EXPRESS</div>
+                        <div>Manila Branch</div>
+                        <div style="font-size:0.8rem; margin-top:5px;">Date: <span id="r-date"></span></div>
+                        <div style="font-size:1.5rem; font-weight:bold; margin:10px 0;">QUEUE: <span id="r-queue"></span></div>
+                        <div>Table: <span id="r-table"></span></div>
+                    </div>
+                    <div id="r-items"></div>
+                    <div class="r-total">
+                        <span>TOTAL</span>
+                        <span>₱<span id="r-total-amt">0</span></span>
+                    </div>
+                    <div class="r-footer">
+                        Thank you for dining with us!<br>
+                        Please wait for your number.
+                    </div>
+                </div>
+
+                <button class="btn-confirm btn-download" onclick="app.downloadReceipt()">
+                    <i class="fas fa-download"></i> SAVE AS IMAGE
+                </button>
+                <button class="btn-cancel" onclick="app.finishTransaction()">NEW ORDER</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="screen-admin" class="screen">
+        <div class="admin-layout">
+            <div class="sidebar">
+                <h3>Admin</h3>
+                <button onclick="app.nav('monitor')" style="padding:10px; cursor:pointer; margin-top:10px;">Monitor</button>
+                <button onclick="app.clearData()" style="padding:10px; background:red; color:white; border:none; margin-top:10px;">Reset</button>
+                <button onclick="app.nav('intro')" style="padding:10px; margin-top:auto;">Exit</button>
+            </div>
+            <div class="board">
+                <div class="col"><h3>🔥 Preparing</h3><div id="list-prep"></div></div>
+                <div class="col"><h3>✅ Ready</h3><div id="list-ready"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-monitor" class="screen" onclick="app.nav('admin')" style="background:#111; color:white; justify-content:center; align-items:center; text-align:center;">
+        <div style="letter-spacing:5px; color:#888;">NOW SERVING</div>
+        <div id="mon-q" style="font-size:10rem; font-weight:900; color:#f8c026; line-height:1;">--</div>
+        <div id="mon-t" style="font-size:3rem;"></div>
+    </div>
+
+    <script>
+        // --- IMAGE & DATA ---
+        const PRODUCTS = [
+            { id: 1, type: 'meal', name: "Chickenjoy w/ Rice", price: 125, img: "https://placehold.co/300x200/e67e22/FFF?text=Chicken" },
+            { id: 2, type: 'meal', name: "Cheesy Burger", price: 95, img: "https://placehold.co/300x200/8e44ad/FFF?text=Burger" },
+            { id: 3, type: 'meal', name: "Spaghetti Platter", price: 85, img: "https://placehold.co/300x200/c0392b/FFF?text=Spag" },
+            { id: 10, type: 'drink', name: "Coke Original", price: 45, img: "https://placehold.co/300x200/2c3e50/FFF?text=Coke" },
+            { id: 20, type: 'side', name: "French Fries", price: 60, img: "https://placehold.co/300x200/f1c40f/333?text=Fries" },
+        ];
+
+        window.app = {
+            state: { cart: [], table: null, filter: 'all', orders: JSON.parse(localStorage.getItem('kiosk_db')) || [] },
+
+            init: () => { app.renderMenu(); setInterval(app.refreshAdmin, 1000); },
+            nav: (s) => { document.querySelectorAll('.screen').forEach(e => e.classList.remove('active')); document.getElementById(`screen-${s}`).classList.add('active'); },
+            
+            start: () => { app.nav('table'); setTimeout(() => document.getElementById('input-table').focus(), 100); },
+            
+            confirmTable: () => {
+                const val = document.getElementById('input-table').value;
+                if(!val) return alert("Enter table #");
+                app.state.table = val;
+                document.getElementById('disp-table').innerText = val;
+                app.nav('menu');
+            },
+
+            filter: (t, btn) => {
+                app.state.filter = t;
+                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                app.renderMenu();
+            },
+
+            renderMenu: () => {
+                const grid = document.getElementById('menu-grid');
+                const list = app.state.filter === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.type === app.state.filter);
+                grid.innerHTML = list.map(p => `
+                    <div class="food-card" onclick="app.add(${p.id})">
+                        <img src="${p.img}" class="food-img">
+                        <div class="food-info">
+                            <h4>${p.name}</h4>
+                            <div style="color:#e3000f; font-weight:bold;">₱${p.price}</div>
+                        </div>
+                        <div class="add-icon"><i class="fas fa-plus"></i></div>
+                    </div>
+                `).join('');
+            },
+
+            add: (id) => {
+                app.state.cart.push(PRODUCTS.find(p => p.id === id));
+                app.updateCartUI();
+            },
+
+            updateCartUI: () => {
+                const total = app.state.cart.reduce((s,i) => s + i.price, 0);
+                document.getElementById('cart-total').innerText = total;
+                document.getElementById('cart-count').innerText = app.state.cart.length;
+            },
+
+            // --- CHECKOUT LOGIC ---
+            showSummary: () => {
+                if(app.state.cart.length === 0) return alert("Empty Cart");
+                
+                // Group items
+                const counts = {};
+                app.state.cart.forEach(i => {
+                    if(!counts[i.name]) counts[i.name] = { count: 0, price: i.price };
+                    counts[i.name].count++;
+                });
+
+                let html = "";
+                let total = 0;
+                for(const [name, data] of Object.entries(counts)) {
+                    const lineTotal = data.count * data.price;
+                    total += lineTotal;
+                    html += `<tr><td>${data.count}x</td><td>${name}</td><td>₱${lineTotal}</td></tr>`;
+                }
+
+                document.getElementById('summary-list').innerHTML = html;
+                document.getElementById('sum-total').innerText = total;
+                
+                // Switch Modal View
+                document.getElementById('view-summary').classList.remove('hidden');
+                document.getElementById('view-receipt').classList.add('hidden');
+                document.getElementById('modal-checkout').style.display = 'flex';
+            },
+
+            closeModal: () => document.getElementById('modal-checkout').style.display = 'none',
+
+            processOrder: () => {
+                const q = "Q" + Math.floor(Math.random() * 900 + 100);
+                const total = app.state.cart.reduce((s,i) => s + i.price, 0);
+                
+                const order = {
+                    id: Date.now(),
+                    queue: q,
+                    table: app.state.table,
+                    items: [...app.state.cart],
+                    total: total,
+                    status: 'pending',
+                    timestamp: Date.now()
+                };
+
+                app.state.orders.push(order);
+                localStorage.setItem('kiosk_db', JSON.stringify(app.state.orders));
+                
+                // Show Receipt View
+                app.renderReceipt(order);
+            },
+
+            renderReceipt: (order) => {
+                document.getElementById('view-summary').classList.add('hidden');
+                document.getElementById('view-receipt').classList.remove('hidden');
+
+                document.getElementById('r-date').innerText = new Date().toLocaleString();
+                document.getElementById('r-queue').innerText = order.queue;
+                document.getElementById('r-table').innerText = order.table;
+                document.getElementById('r-total-amt').innerText = order.total;
+
+                // Receipt Items
+                const counts = {};
+                order.items.forEach(i => counts[i.name] = (counts[i.name] || 0) + 1);
+                
+                document.getElementById('r-items').innerHTML = Object.entries(counts).map(([name, count]) => `
+                    <div class="r-row">
+                        <span>${count}x ${name}</span>
+                        <span></span>
+                    </div>
+                `).join('');
+            },
+
+            downloadReceipt: () => {
+                const element = document.getElementById("receipt-capture");
+                html2canvas(element).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `Receipt-${document.getElementById('r-queue').innerText}.png`;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                });
+            },
+
+            finishTransaction: () => {
+                app.state.cart = [];
+                app.state.table = null;
+                document.getElementById('input-table').value = "";
+                app.updateCartUI();
+                app.closeModal();
+                app.nav('intro');
+            },
+
+            // --- ADMIN ---
+            toggleAdmin: () => { if(prompt("PIN") === "1234") app.nav('admin'); },
+            
+            refreshAdmin: () => {
+                app.state.orders = JSON.parse(localStorage.getItem('kiosk_db')) || [];
+                const prepEl = document.getElementById('list-prep');
+                const readyEl = document.getElementById('list-ready');
+                let prepH = "", readyH = "";
+
+                app.state.orders.forEach(o => {
+                    if(o.status === 'served') return;
+                    const items = o.items.map(i => i.name).join(', '); // Simple list
+                    const card = `<div class="ticket ${o.status}">
+                        <strong>${o.queue} (Table ${o.table})</strong><br>
+                        <small>${items}</small><br>
+                        ${o.status === 'pending' 
+                           ? `<button onclick="app.setStatus(${o.id}, 'ready')">MARK READY</button>` 
+                           : `<button onclick="app.setStatus(${o.id}, 'served')">SERVE</button>`}
+                    </div>`;
+                    if(o.status === 'pending') prepH += card; else readyH += card;
+                });
+                
+                prepEl.innerHTML = prepH; readyEl.innerHTML = readyH;
+                
+                // Monitor
+                const last = app.state.orders.filter(o => o.status === 'ready').pop();
+                document.getElementById('mon-q').innerText = last ? last.queue : "--";
+                document.getElementById('mon-t').innerText = last ? "TABLE " + last.table : "";
+            },
+
+            setStatus: (id, st) => {
+                const i = app.state.orders.findIndex(o => o.id === id);
+                if(i > -1) { app.state.orders[i].status = st; localStorage.setItem('kiosk_db', JSON.stringify(app.state.orders)); app.refreshAdmin(); }
+            },
+            clearData: () => { localStorage.removeItem('kiosk_db'); app.refreshAdmin(); }
+        };
+
+        app.init();
+    </script>
+</body>
+</html>
