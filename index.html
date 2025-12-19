@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gelo Kiosk - Designer Header</title>
+    <title>Gelo Kiosk - Complete Receipt</title>
     
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,666 +11,493 @@
 
     <style>
         :root {
-            --brand-red: #e3000f; /* Primary */
-            --brand-dark-red: #c0000c; /* Gradient end */
-            --brand-yellow: #f8c026;
-            --dark: #202124;
-            --light: #f4f6f8;
+            --brand-red: #D32F2F;
+            --brand-yellow: #FFC107;
+            --dark: #212121;
+            --gray: #F5F5F5;
             --white: #ffffff;
-            --shadow: 0 8px 25px rgba(0,0,0,0.1);
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body { 
-            margin: 0; font-family: 'DM Sans', sans-serif; 
-            background: var(--light); color: var(--dark); 
-            height: 100vh; overflow: hidden; 
-        }
+        body { margin: 0; font-family: 'DM Sans', sans-serif; background: var(--gray); color: var(--dark); height: 100vh; overflow: hidden; }
 
-        /* --- UTILS --- */
+        /* --- SCREEN MANAGMENT --- */
         .hidden { display: none !important; }
-        .flex-center { display: flex; justify-content: center; align-items: center; flex-direction: column; }
-        
-        .screen { 
-            position: absolute; inset: 0; display: none; z-index: 10; 
-            flex-direction: column; background: var(--light);
-            overflow-y: auto; overflow-x: hidden;
-            -webkit-overflow-scrolling: touch; 
-        }
-        .screen.active { display: flex; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .flex-center { display: flex; justify-content: center; align-items: center; flex-direction: column; height: 100%; }
+        .screen { position: absolute; inset: 0; display: none; flex-direction: column; background: var(--gray); overflow: hidden; z-index: 10; }
+        .screen.active { display: flex; animation: fade 0.2s; }
+        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- BUTTONS --- */
-        .btn { border: none; padding: 15px; border-radius: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: 'DM Sans', sans-serif; font-size: 1rem; transition: 0.1s; }
-        .btn:active { transform: scale(0.97); }
-        .btn-primary { background: var(--brand-red); color: white; box-shadow: 0 4px 15px rgba(227,0,15,0.4); }
-        .btn-outline { background: white; border: 2px solid #eee; color: #555; }
+        /* --- 1. INTRO --- */
+        #screen-intro { background: var(--brand-red); color: white; text-align: center; }
+        .logo-text { font-family: 'Fredoka', sans-serif; font-size: 4rem; margin: 0; text-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .tap-area { margin-top: 40px; animation: pulse 1.5s infinite; cursor: pointer; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* --- 1. INTRO SCREEN --- */
-        #screen-intro { background: var(--dark); color: white; justify-content: center; padding: 20px; text-align: center; }
-        .brand-main { font-family: 'Fredoka', sans-serif; font-size: clamp(3rem, 10vw, 5rem); color: var(--brand-yellow); margin: 0; line-height: 1.1; }
-        .tap-icon { font-size: clamp(4rem, 15vw, 6rem); margin: 30px 0; animation: bounce 2s infinite; color: white; }
-        .tap-text { font-size: 1.5rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        /* --- 2. SETUP --- */
+        .setup-card { background: white; padding: 40px 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; box-shadow: var(--shadow); margin: auto; }
+        .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+        .type-btn { padding: 20px; border: 2px solid #eee; border-radius: 15px; background: white; cursor: pointer; font-weight: bold; }
+        .type-btn.active { border-color: var(--brand-red); background: #FFF5F5; color: var(--brand-red); }
+        .input-box { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 10px; font-size: 1.1rem; margin-bottom: 15px; outline: none; text-align: center; font-weight: bold; }
+        .btn-main { width: 100%; padding: 15px; background: var(--brand-red); color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
 
-        /* --- 2. DETAILS & TYPE --- */
-        .card-box { background: white; padding: 30px 20px; border-radius: 25px; box-shadow: var(--shadow); width: 95%; max-width: 480px; text-align: center; margin: auto; }
-        .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 25px 0; }
-        @media(max-width:600px){ .opt-grid { grid-template-columns: 1fr; } }
-        
-        .opt-card { background: #f8f8f8; padding: 25px 10px; border-radius: 18px; border: 2px solid transparent; cursor: pointer; position: relative; overflow: hidden; }
-        .opt-card.active, .opt-card:active { border-color: var(--brand-red); background: #fff0f0; }
-        
-        .input-field { width: 100%; padding: 18px; margin-bottom: 15px; border: 2px solid #eee; border-radius: 14px; font-size: 1.2rem; outline: none; background: #fff; text-align: center; font-weight: bold; }
-        .input-field:focus { border-color: var(--brand-red); }
-
-        /* --- 3. DESIGNER HEADER (THE NEW PART) --- */
-        .designer-header {
-            background: linear-gradient(135deg, var(--brand-red), var(--brand-dark-red));
-            color: white;
-            padding: 20px 20px 50px 20px; /* Extra padding bottom for overlap */
-            border-bottom-left-radius: 35px;
-            border-bottom-right-radius: 35px;
-            box-shadow: 0 10px 30px rgba(192, 0, 12, 0.3);
-            text-align: center;
-            position: relative;
-            z-index: 50;
-            flex-shrink: 0;
-        }
-
-        /* Top Brand Strip */
-        .header-top {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 15px; opacity: 0.9;
-        }
-        .mini-logo { font-family: 'Fredoka', sans-serif; font-size: 1.1rem; letter-spacing: 1px; }
-        .btn-change {
-            background: rgba(255,255,255,0.2); color: white; border: none;
-            padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;
-            cursor: pointer; backdrop-filter: blur(5px);
-        }
-
-        /* Main Info */
-        .user-greeting {
-            font-size: 1rem; opacity: 0.9; letter-spacing: 1px; text-transform: uppercase;
-        }
-        .user-name-display {
-            font-family: 'Fredoka', sans-serif; font-size: 2.5rem; margin: 0; line-height: 1.2;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        /* The Big Table Badge */
-        .table-badge-container {
-            margin-top: 15px; display: inline-block;
-        }
-        .table-pill {
-            background: var(--white); color: var(--brand-red);
-            padding: 8px 25px; border-radius: 50px;
-            font-size: 1.2rem; font-weight: 800;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-            display: flex; align-items: center; gap: 8px;
-        }
-
-        /* Floating Categories (Overlapping Header) */
-        .cat-floater {
-            margin-top: -30px; /* Pull up into header */
-            padding: 0 15px; z-index: 60;
-        }
-        .cat-scroll { 
-            display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; 
-            padding: 5px; -webkit-overflow-scrolling: touch;
-        }
-        .cat-btn { 
-            padding: 12px 25px; border-radius: 30px; 
-            background: var(--white); border: none; color: #666; 
-            font-weight: 700; font-size: 0.95rem; white-space: nowrap; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: 0.2s;
-        }
-        .cat-btn.active { background: var(--dark); color: white; transform: scale(1.05); }
-
-        /* --- MENU GRID --- */
-        .menu-area {
-            padding: 20px; flex: 1;
-            padding-bottom: 140px; /* Space for cart */
-        }
-        .menu-grid { 
-            display: grid; 
-            /* Mobile First: 1 Column */
-            grid-template-columns: 1fr; 
-            gap: 25px; 
-        }
-        @media(min-width: 768px) { .menu-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); } }
-
-        /* --- CARD DESIGN --- */
-        .food-card { 
-            background: white; border-radius: 20px; 
-            overflow: hidden; box-shadow: var(--shadow); 
-            display: flex; flex-direction: column; 
-            border: 1px solid #f0f0f0;
-        }
-        .food-img { width: 100%; height: 200px; object-fit: cover; background: #eee; }
-        .food-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
-        
-        .food-name { 
-            font-family: 'Fredoka', sans-serif; 
-            font-size: 1.5rem; margin-bottom: 5px; 
-            color: var(--dark); line-height: 1.1; 
-        }
-        .food-desc { font-size: 0.95rem; color: #888; margin-bottom: 20px; line-height: 1.4; }
-        
-        /* Auto-Reflect Badge */
-        .item-status {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
-        }
-        .status-badge {
-            background: var(--brand-yellow); color: var(--dark); 
-            font-size: 0.8rem; font-weight: bold; padding: 4px 10px; 
-            border-radius: 10px; opacity: 0; transition: 0.3s;
-        }
-        .status-badge.visible { opacity: 1; }
-
-        .price-row { display: flex; justify-content: space-between; align-items: center; }
-        .price-tag { font-weight: 800; font-size: 1.4rem; color: var(--brand-red); }
-
-        /* Controls */
-        .actions { display: flex; align-items: center; gap: 10px; }
-        .qty-box { 
-            display: flex; align-items: center; background: #f4f4f4; 
-            border-radius: 12px; padding: 4px; gap: 5px;
-        }
-        .q-btn { 
-            width: 42px; height: 42px; border: none; background: white; 
-            border-radius: 10px; font-weight: 700; font-size: 1.2rem; 
-            cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .q-btn:active { background: #eee; }
-        .q-val { width: 30px; text-align: center; font-weight: 700; font-size: 1.1rem; }
-        
-        .add-btn { 
-            background: var(--dark); color: white; border: none; 
-            padding: 0 25px; height: 50px; border-radius: 12px; 
-            font-weight: 700; font-size: 1rem; cursor: pointer;
-        }
-        .add-btn:active { background: var(--brand-red); }
-
-        /* --- CART FLOATING BAR --- */
-        .cart-float { 
-            position: fixed; bottom: 25px; left: 15px; right: 15px; 
+        /* --- 3. MENU --- */
+        .menu-header { 
             background: var(--brand-red); color: white; 
-            padding: 20px 25px; border-radius: 20px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            box-shadow: 0 15px 40px rgba(227, 0, 15, 0.4); 
-            z-index: 100; cursor: pointer; 
-            max-width: 600px; margin: 0 auto;
-            transform: translateY(150%); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            padding: 20px 20px 50px 20px; border-radius: 0 0 30px 30px; 
+            flex-shrink: 0; position: relative; z-index: 20;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-        .cart-float.show { transform: translateY(0); }
-        .cart-total { font-size: 1.4rem; font-weight: 800; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .customer-title { font-family: 'Fredoka', sans-serif; font-size: 2.2rem; margin: 0; line-height: 1; }
+        
+        .cat-container { margin-top: -30px; padding: 0 15px; z-index: 30; }
+        .cat-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 5px; scrollbar-width: none; }
+        .cat-pill { 
+            background: white; color: #555; padding: 10px 25px; 
+            border-radius: 50px; font-weight: bold; white-space: nowrap; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: none; cursor: pointer;
+        }
+        .cat-pill.active { background: var(--dark); color: white; }
 
-        /* --- MODAL --- */
+        .menu-content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 120px; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        @media (max-width: 600px) { .menu-grid { grid-template-columns: 1fr; } }
+
+        .item-card { 
+            background: white; border-radius: 15px; overflow: hidden; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); cursor: pointer;
+            display: flex; align-items: center; padding: 10px; gap: 15px;
+        }
+        .item-img { width: 90px; height: 90px; object-fit: cover; border-radius: 12px; background: #eee; flex-shrink: 0; }
+        .item-info { flex: 1; }
+        .item-name { font-weight: 800; font-size: 1.1rem; color: var(--dark); margin-bottom: 4px; }
+        .item-desc { font-size: 0.85rem; color: #888; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 5px; }
+        .item-price { color: var(--brand-red); font-weight: 800; font-size: 1.1rem; }
+        .btn-plus-icon { background: var(--gray); width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+        /* --- MODALS --- */
         .modal-overlay { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.85); 
-            z-index: 200; display: none; justify-content: center; align-items: flex-end; 
-            backdrop-filter: blur(5px); 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; 
+            display: none; justify-content: center; align-items: flex-end; backdrop-filter: blur(3px);
         }
-        .modal-box { 
+        .modal-overlay.open { display: flex; }
+        
+        .product-sheet { 
             background: white; width: 100%; max-width: 500px; 
-            padding: 30px; border-radius: 30px 30px 0 0; 
-            max-height: 90vh; display: flex; flex-direction: column; 
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
-            animation: slideUpModal 0.3s;
+            border-radius: 25px 25px 0 0; overflow: hidden; 
+            display: flex; flex-direction: column; max-height: 90vh;
+            animation: slideUp 0.3s;
         }
-        @keyframes slideUpModal { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        .review-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f0f0f0; }
-        
-        /* Receipt */
-        .receipt-paper { 
-            background: #fff; padding: 25px; border: 1px dashed #333; 
-            font-family: 'Courier New', monospace; text-align: center; 
-            font-size: 0.9rem; margin-top: 10px; width: 100%;
+        .p-img-area { height: 200px; background: #eee; position: relative; }
+        .p-img-full { width: 100%; height: 100%; object-fit: cover; }
+        .close-btn { position: absolute; top: 15px; right: 15px; background: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+        .p-content { padding: 25px; overflow-y: auto; }
+        .p-title { font-family: 'Fredoka', sans-serif; font-size: 1.8rem; line-height: 1.1; }
+        .p-price { font-size: 1.5rem; font-weight: 800; color: var(--brand-red); margin-bottom: 10px; }
+        .p-desc { color: #666; margin-bottom: 20px; }
+
+        .flavor-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .flavor-btn { padding: 10px 20px; border: 1px solid #ddd; border-radius: 12px; background: white; font-weight: 600; cursor: pointer; flex: 1; text-align: center; min-width: 80px; }
+        .flavor-btn.selected { border-color: var(--brand-red); background: #FFF5F5; color: var(--brand-red); font-weight: 800; }
+
+        .p-footer { padding: 15px 25px; border-top: 1px solid #eee; display: flex; gap: 15px; align-items: center; }
+        .qty-control { display: flex; align-items: center; background: #f0f0f0; border-radius: 12px; padding: 5px; }
+        .qty-btn { width: 40px; height: 40px; border: none; background: white; border-radius: 8px; font-weight: bold; font-size: 1.2rem; cursor: pointer; }
+        .qty-val { width: 35px; text-align: center; font-weight: 800; font-size: 1.2rem; }
+        .btn-add { flex: 1; background: var(--brand-red); color: white; border: none; border-radius: 12px; height: 50px; font-weight: 800; font-size: 1.1rem; cursor: pointer; }
+
+        /* --- CART BAR --- */
+        .cart-bar { 
+            position: fixed; bottom: 20px; left: 15px; right: 15px; 
+            background: var(--dark); color: white; padding: 15px 25px; 
+            border-radius: 15px; display: flex; justify-content: space-between; 
+            align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); 
+            z-index: 50; cursor: pointer;
         }
-        .r-row { display: flex; justify-content: space-between; margin: 5px 0; text-align: left; }
-        .r-div { border-bottom: 1px dashed #000; margin: 10px 0; }
-        
-        .hidden-trigger { position: absolute; top:0; left:0; width:60px; height:60px; z-index:999; }
-        /* Admin */
-        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; height: 100%; overflow: hidden; }
-        @media(max-width:768px){ .admin-grid { grid-template-columns: 1fr; overflow-y: auto; } }
+
+        /* --- OFFICIAL RECEIPT STYLE --- */
+        .receipt-container {
+            background: #fff;
+            padding: 30px 20px;
+            width: 100%;
+            border: 1px dashed #333;
+            font-family: 'Courier New', Courier, monospace; /* RECEIPT FONT */
+            font-size: 0.85rem;
+            color: #000;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .r-header { font-weight: 900; font-size: 1.2rem; margin-bottom: 5px; text-transform: uppercase; }
+        .r-sub { font-size: 0.8rem; margin-bottom: 10px; border-bottom: 2px dashed #000; padding-bottom: 10px; }
+        .r-row { display: flex; justify-content: space-between; margin: 4px 0; text-align: left; }
+        .r-bold { font-weight: 800; }
+        .r-line { border-bottom: 1px dashed #000; margin: 8px 0; }
+        .r-item-row { display: flex; justify-content: space-between; margin-top: 8px; align-items: flex-start; text-align: left; }
+        .r-item-details { flex: 1; }
+        .r-item-flavor { font-size: 0.75rem; color: #555; font-style: italic; display: block; }
+        .r-total { font-size: 1.3rem; font-weight: 900; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, serverTimestamp, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        
-        const firebaseConfig = { apiKey: "AIzaSyDxmEuSOtR_SHPZu2LWCc6HG5U5HfgUlPM", authDomain: "orderingsystem-9dcd9.firebaseapp.com", projectId: "orderingsystem-9dcd9", storageBucket: "orderingsystem-9dcd9.firebasestorage.app", messagingSenderId: "879405920262", appId: "1:879405920262:web:d677b534a4f374a4aa1387", measurementId: "G-JHLBK4QB1B" };
-        
-        const app = initializeApp(firebaseConfig);
-        window.db = getFirestore(app);
-        window.fs = { collection, addDoc, onSnapshot, updateDoc, doc, serverTimestamp, query, orderBy, limit };
-    </script>
-
-    <div id="screen-intro" class="screen active" onclick="app.nav('type')">
+    <div id="screen-intro" class="screen active">
         <div class="flex-center">
-            <div style="font-size:1.2rem; opacity:0.8; margin-bottom:5px;">Welcome to</div>
-            <h1 class="brand-main">Gelo's Kiosk</h1>
-            <div class="tap-icon"><i class="fas fa-hand-pointer"></i></div>
-            <div class="tap-text">Tap to Order</div>
-        </div>
-        <div class="hidden-trigger" ondblclick="app.checkAdmin()"></div>
-    </div>
-
-    <div id="screen-type" class="screen flex-center">
-        <div class="card-box">
-            <h2 style="font-size:2rem; margin:0; font-family:'Fredoka'">Dining Option</h2>
-            <div class="opt-grid">
-                <div class="opt-card" onclick="app.selectType('dine-in')">
-                    <i class="fas fa-utensils" style="font-size:3rem; color:var(--brand-red); margin-bottom:15px;"></i>
-                    <div style="font-weight:800; font-size:1.3rem;">Dine In</div>
-                </div>
-                <div class="opt-card" onclick="app.selectType('take-out')">
-                    <i class="fas fa-bag-shopping" style="font-size:3rem; color:var(--brand-red); margin-bottom:15px;"></i>
-                    <div style="font-weight:800; font-size:1.3rem;">Take Out</div>
-                </div>
+            <h1 class="logo-text">Gelo's</h1>
+            <div style="font-size:1.5rem; opacity:0.9;">KIOSK</div>
+            <div class="tap-area" onclick="app.nav('setup')">
+                <i class="fas fa-hand-pointer" style="font-size:4rem;"></i>
+                <div style="margin-top:10px; font-weight:bold;">START ORDER</div>
             </div>
-            <button class="btn btn-outline" style="width:100%" onclick="app.nav('intro')">Cancel</button>
         </div>
     </div>
 
-    <div id="screen-details" class="screen flex-center">
-        <div class="card-box">
-            <h2 style="margin:0 0 20px 0; font-family:'Fredoka'; font-size:2rem;">Your Info</h2>
-            
-            <input type="text" id="inp-name" class="input-field" placeholder="Enter Your Name" autocomplete="off">
-            <input type="number" id="inp-table" class="input-field" placeholder="Table Number" autocomplete="off">
-
-            <button class="btn btn-primary" style="width:100%; padding:18px; font-size:1.2rem;" onclick="app.confirmDetails()">PROCEED <i class="fas fa-arrow-right"></i></button>
-            <button class="btn btn-outline" style="width:100%; margin-top:15px;" onclick="app.nav('type')">Back</button>
+    <div id="screen-setup" class="screen">
+        <div class="flex-center">
+            <div class="setup-card">
+                <h2 style="margin:0 0 20px 0;">Dining Option</h2>
+                <div class="type-grid">
+                    <div class="type-btn" onclick="app.setType('dine')" id="btn-dine">
+                        <i class="fas fa-utensils" style="font-size:2rem; margin-bottom:5px;"></i><br>Dine In
+                    </div>
+                    <div class="type-btn" onclick="app.setType('take')" id="btn-take">
+                        <i class="fas fa-shopping-bag" style="font-size:2rem; margin-bottom:5px;"></i><br>Take Out
+                    </div>
+                </div>
+                <input type="text" id="inp-name" class="input-box" placeholder="Your Name">
+                <input type="number" id="inp-table" class="input-box" placeholder="Table No.">
+                <button class="btn-main" onclick="app.confirmSetup()">PROCEED</button>
+            </div>
         </div>
     </div>
 
     <div id="screen-menu" class="screen">
-        
-        <div class="designer-header">
+        <div class="menu-header">
             <div class="header-top">
-                <div class="mini-logo"><i class="fas fa-store"></i> GELO'S KIOSK</div>
-                <button class="btn-change" onclick="app.changeOrderType()">CHANGE</button>
+                <small style="opacity:0.8; letter-spacing:1px;">HELLO,</small>
+                <button onclick="app.nav('setup')" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:5px 10px; border-radius:10px; font-size:0.8rem;">Change</button>
             </div>
-            
-            <div class="user-greeting">Hi there,</div>
-            <h1 class="user-name-display" id="disp-name">Guest</h1>
-            
-            <div class="table-badge-container">
-                <div class="table-pill">
-                    <i class="fas fa-chair" id="type-icon"></i>
-                    <span id="disp-type">--</span>
-                </div>
-            </div>
+            <h1 class="customer-title" id="disp-name">Guest</h1>
+            <div id="disp-type" style="margin-top:5px; font-size:0.9rem; opacity:0.9; font-weight:bold;">--</div>
         </div>
 
-        <div class="cat-floater">
+        <div class="cat-container">
             <div class="cat-scroll">
-                <button class="cat-btn active" onclick="app.filter('all', this)">All Items</button>
-                <button class="cat-btn" onclick="app.filter('meal', this)">Meals</button>
-                <button class="cat-btn" onclick="app.filter('drink', this)">Drinks</button>
-                <button class="cat-btn" onclick="app.filter('side', this)">Sides</button>
+                <button class="cat-pill active" onclick="app.filter('all', this)">All Items</button>
+                <button class="cat-pill" onclick="app.filter('meal', this)">Meals</button>
+                <button class="cat-pill" onclick="app.filter('drink', this)">Drinks</button>
+                <button class="cat-pill" onclick="app.filter('side', this)">Sides</button>
             </div>
         </div>
 
-        <div class="menu-area">
+        <div class="menu-content">
             <div id="menu-grid" class="menu-grid"></div>
         </div>
 
-        <div id="cart-float" class="cart-float" onclick="app.viewSummary()">
-            <div style="display:flex; flex-direction:column;">
-                <span style="font-size:0.8rem; opacity:0.9;">Total Order</span>
-                <span class="cart-total">₱<span id="cart-total">0</span></span>
+        <div id="cart-bar" class="cart-bar hidden" onclick="app.viewCart()">
+            <div>
+                <span style="font-size:0.8rem; color:#ccc;">TOTAL</span>
+                <div style="font-size:1.3rem; font-weight:800;">₱<span id="cart-total">0</span></div>
             </div>
-            <div style="font-weight:700; display:flex; align-items:center; gap:10px;">
-                <span style="background:rgba(255,255,255,0.2); padding:4px 12px; border-radius:8px;" id="cart-count">0</span>
-                <span>REVIEW <i class="fas fa-chevron-up"></i></span>
+            <div style="font-weight:bold; display:flex; align-items:center; gap:10px;">
+                <span id="cart-count" style="background:var(--brand-red); padding:2px 8px; border-radius:5px;">0</span> VIEW CART
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-product" class="modal-overlay">
+        <div class="product-sheet">
+            <div class="p-img-area">
+                <img id="modal-img" class="p-img-full" src="">
+                <div class="close-btn" onclick="app.closeProduct()"><i class="fas fa-times"></i></div>
+            </div>
+            <div class="p-content">
+                <div class="p-title" id="modal-name">Name</div>
+                <div class="p-price">₱<span id="modal-price">0</span></div>
+                <div class="p-desc" id="modal-desc">Description</div>
+                <div class="section-title" style="font-weight:bold; margin-bottom:10px; color:#555;">SELECT FLAVOR</div>
+                <div class="flavor-grid" id="modal-flavors"></div>
+            </div>
+            <div class="p-footer">
+                <div class="qty-control">
+                    <button class="qty-btn" onclick="app.qty(-1)">-</button>
+                    <div class="qty-val" id="modal-qty">1</div>
+                    <button class="qty-btn" onclick="app.qty(1)">+</button>
+                </div>
+                <button class="btn-add" onclick="app.addToCart()">ADD TO ORDER</button>
             </div>
         </div>
     </div>
 
     <div id="modal-checkout" class="modal-overlay">
-        <div class="modal-box">
-            <div id="view-review" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h2 style="margin:0; font-family:'Fredoka'">My Order</h2>
-                    <button class="btn btn-outline" style="padding:8px;" onclick="app.closeModal()"><i class="fas fa-times"></i></button>
-                </div>
-                
-                <div id="summary-list" style="overflow-y:auto; flex:1; border-top:1px dashed #eee; border-bottom:1px dashed #eee; margin-bottom:15px;"></div>
-                
-                <div style="display:flex; justify-content:space-between; font-size:1.5rem; font-weight:800; margin-bottom:20px;">
-                    <span>Total</span> <span style="color:var(--brand-red)">₱<span id="sum-total">0</span></span>
-                </div>
-                <button id="btn-pay" class="btn btn-primary" style="width:100%; padding:18px; font-size:1.2rem;" onclick="app.processOrder()">CONFIRM ORDER</button>
+        <div class="product-sheet" style="max-height:80vh;">
+            <div style="padding:20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+                <h2 style="margin:0;">My Order</h2>
+                <i class="fas fa-times" style="font-size:1.2rem;" onclick="document.getElementById('modal-checkout').classList.remove('open')"></i>
             </div>
+            <div id="cart-list" style="flex:1; overflow-y:auto; padding:20px;"></div>
+            <div style="padding:20px; border-top:1px solid #eee;">
+                <div style="display:flex; justify-content:space-between; font-size:1.5rem; font-weight:800; margin-bottom:15px;">
+                    <span>Total</span> <span style="color:var(--brand-red)">₱<span id="checkout-total">0</span></span>
+                </div>
+                <button class="btn-main" id="btn-pay" onclick="app.placeOrder()">CONFIRM ORDER</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-receipt" class="screen" style="justify-content:center; align-items:center; padding:20px;">
+        <i class="fas fa-check-circle" style="font-size:5rem; color:#27ae60; margin-bottom:20px;"></i>
+        <h2 style="margin:0;">Order Success!</h2>
+        <p style="color:#666; margin-bottom:20px;">Please take your receipt.</p>
+        
+        <div id="receipt-capture" class="receipt-container">
+            <div class="r-header">GELO'S KIOSK</div>
+            <div class="r-sub">Manila Branch</div>
             
-            <div id="view-receipt" class="hidden" style="text-align:center; overflow-y:auto;">
-                <i class="fas fa-check-circle" style="font-size:4rem; color:#27ae60; margin-bottom:15px;"></i>
-                <h2 style="margin:0; color:#27ae60; font-family:'Fredoka'">Order Sent!</h2>
-                
-                <div id="receipt-capture" class="receipt-paper">
-                    <div style="font-weight:900; font-size:1.3rem; margin-bottom:5px;">GELO'S KIOSK</div>
-                    <div class="r-row"><span>Date:</span> <span id="r-date"></span></div>
-                    <div class="r-row"><span>Order ID:</span> <span id="r-queue"></span></div>
-                    <div class="r-row"><span>Customer:</span> <span id="r-name"></span></div>
-                    <div class="r-row"><span>Type:</span> <span id="r-type" style="font-weight:bold"></span></div>
-                    <div class="r-row" id="r-table-row"><span>Table:</span> <span id="r-table"></span></div>
-                    <div class="r-div"></div>
-                    <div class="r-row" style="font-weight:bold;"><span>ITEM</span> <span>AMT</span></div>
-                    <div class="r-div"></div>
-                    <div id="r-items"></div>
-                    <div class="r-div" style="border-style:solid;"></div>
-                    <div class="r-row" style="font-weight:800; font-size:1.2rem;">
-                        <span>TOTAL</span> <span>₱<span id="r-total"></span></span>
-                    </div>
-                </div>
-
-                <button class="btn btn-primary" style="width:100%; margin-top:20px; background:var(--dark);" onclick="app.downloadReceipt()">SAVE RECEIPT</button>
-                <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="location.reload()">New Order</button>
-            </div>
+            <div class="r-row"><span>Date:</span> <span id="r-date"></span></div>
+            <div class="r-row"><span>Time:</span> <span id="r-time"></span></div>
+            <div class="r-row"><span>Order ID:</span> <span id="r-queue" class="r-bold"></span></div>
+            <div class="r-line"></div>
+            
+            <div class="r-row"><span>Customer:</span> <span id="r-name" class="r-bold"></span></div>
+            <div class="r-row"><span>Type:</span> <span id="r-type"></span></div>
+            <div class="r-row" id="r-table-row"><span>Table:</span> <span id="r-table"></span></div>
+            
+            <div class="r-line"></div>
+            <div class="r-row r-bold"><span>QTY ITEM</span> <span>TOTAL</span></div>
+            <div class="r-line"></div>
+            
+            <div id="r-items"></div>
+            
+            <div class="r-line"></div>
+            <div class="r-row r-total"><span>TOTAL DUE</span> <span>₱<span id="r-total"></span></span></div>
+            <div class="r-line"></div>
+            <div style="font-size:0.8rem; margin-top:10px;">Thank you for dining with us!</div>
         </div>
+        
+        <button class="btn-main" style="margin-top:20px; background:var(--dark);" onclick="app.downloadReceipt()">SAVE IMAGE</button>
+        <button style="margin-top:15px; border:none; background:none; color:#777;" onclick="location.reload()">New Order</button>
     </div>
 
-    <div id="screen-admin" class="screen">
-        <div style="background:#202124; color:white; padding:15px; display:flex; justify-content:space-between;">
-            <h3 style="margin:0;">Kitchen</h3>
-            <button class="btn btn-outline" style="background:transparent; color:white; padding:5px 10px;" onclick="location.reload()">Exit</button>
-        </div>
-        <div style="padding:15px;"><button class="btn btn-primary" style="width:100%" onclick="app.nav('monitor')">Open Monitor</button></div>
-        <div class="admin-grid">
-            <div style="background:white; padding:15px; border-radius:12px;">
-                <h3 style="color:var(--brand-red); margin-top:0;">Preparing</h3>
-                <div id="list-prep"></div>
-            </div>
-            <div style="background:white; padding:15px; border-radius:12px;">
-                <h3 style="color:#27ae60; margin-top:0;">Ready</h3>
-                <div id="list-ready"></div>
-            </div>
-        </div>
-    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        const appInfo = initializeApp({ apiKey: "AIzaSyDxmEuSOtR_SHPZu2LWCc6HG5U5HfgUlPM", authDomain: "orderingsystem-9dcd9.firebaseapp.com", projectId: "orderingsystem-9dcd9", storageBucket: "orderingsystem-9dcd9.firebasestorage.app", messagingSenderId: "879405920262", appId: "1:879405920262:web:d677b534a4f374a4aa1387", measurementId: "G-JHLBK4QB1B" });
+        const db = getFirestore(appInfo);
 
-    <div id="screen-monitor" class="screen flex-center" style="background:#111; color:white; text-align:center;" ondblclick="app.nav('admin')">
-        <div style="font-size:clamp(2rem, 5vw, 3rem); color:#777; letter-spacing:5px; font-weight:700;">NOW SERVING</div>
-        <div id="mon-q" style="font-size:clamp(6rem, 20vw, 15rem); font-weight:800; color:var(--brand-yellow); line-height:1; margin:20px 0;">--</div>
-        <div id="mon-meta" style="font-size:clamp(1.5rem, 4vw, 2.5rem);">Waiting...</div>
-    </div>
-
-    <script>
         const PRODUCTS = [
-            { id: 1, type: 'meal', name: "Chicken Meal", price: 125, desc: "Crispy fried chicken w/ rice & gravy.", img: "https://placehold.co/500x350/e67e22/FFF?text=Chicken" },
-            { id: 2, type: 'meal', name: "Burger w/ Cheese", price: 95, desc: "Beef patty with cheese & veggies.", img: "https://placehold.co/500x350/8e44ad/FFF?text=Burger" },
-            { id: 3, type: 'meal', name: "Spaghetti", price: 85, desc: "Sweet-style spaghetti w/ hotdogs.", img: "https://placehold.co/500x350/c0392b/FFF?text=Spag" },
-            { id: 4, type: 'meal', name: "Burger Steak", price: 110, desc: "Burger patty w/ mushroom gravy.", img: "https://placehold.co/500x350/5d4037/FFF?text=Steak" },
-            { id: 10, type: 'drink', name: "Iced Tea", price: 55, desc: "House-blend iced tea.", img: "https://placehold.co/500x350/d35400/FFF?text=Tea" },
-            { id: 11, type: 'drink', name: "Coke Float", price: 65, desc: "Coke with vanilla ice cream.", img: "https://placehold.co/500x350/2c3e50/FFF?text=Float" },
-            { id: 20, type: 'side', name: "Fries", price: 70, desc: "Crispy salted fries.", img: "https://placehold.co/500x350/f1c40f/333?text=Fries" },
+            { id: 1, type: 'meal', name: "Chicken Meal", price: 125, desc: "Crispy fried chicken with gravy.", flavors: ["Original", "Spicy", "Garlic"], img: "https://placehold.co/400x300/e67e22/FFF?text=Chicken" },
+            { id: 2, type: 'meal', name: "Burger", price: 95, desc: "100% Beef patty.", flavors: ["Regular", "Cheese", "Double"], img: "https://placehold.co/400x300/8e44ad/FFF?text=Burger" },
+            { id: 3, type: 'meal', name: "Spaghetti", price: 85, desc: "Sweet style spaghetti.", flavors: ["Regular", "Spicy"], img: "https://placehold.co/400x300/c0392b/FFF?text=Spag" },
+            { id: 4, type: 'meal', name: "Steak", price: 110, desc: "Burger steak with rice.", flavors: ["Mushroom", "Pepper"], img: "https://placehold.co/400x300/5d4037/FFF?text=Steak" },
+            { id: 10, type: 'drink', name: "Iced Tea", price: 55, desc: "House blend tea.", flavors: ["Lemon", "Peach"], img: "https://placehold.co/400x300/d35400/FFF?text=Tea" },
+            { id: 11, type: 'drink', name: "Coke", price: 65, desc: "Cold soda.", flavors: ["Regular", "Zero"], img: "https://placehold.co/400x300/2c3e50/FFF?text=Coke" },
+            { id: 20, type: 'side', name: "Fries", price: 70, desc: "Crispy fries.", flavors: ["Salted", "Cheese", "BBQ"], img: "https://placehold.co/400x300/f1c40f/333?text=Fries" },
         ];
 
         window.app = {
-            state: { cart: [], orderType: null, customer: {}, filter: 'all', qtys: {} },
-
-            init: () => {
-                PRODUCTS.forEach(p => app.state.qtys[p.id] = 1);
-            },
+            data: { cart: [], type: 'dine', customer: {}, filter: 'all', tempItem: {} },
 
             nav: (s) => {
                 document.querySelectorAll('.screen').forEach(e => e.classList.remove('active'));
                 document.getElementById(`screen-${s}`).classList.add('active');
             },
 
-            selectType: (t) => {
-                app.state.orderType = t;
-                const grp = document.getElementById('inp-table');
-                if(t === 'take-out') grp.style.display = 'none';
-                else grp.style.display = 'block';
-                app.nav('details');
-            },
-            
-            changeOrderType: () => {
-                if(confirm("Start new order?")) {
-                    app.state.cart = [];
-                    app.updateUI();
-                    app.nav('type');
-                }
+            setType: (t) => {
+                app.data.type = t;
+                document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById(`btn-${t}`).classList.add('active');
+                document.getElementById('inp-table').style.display = t==='take'?'none':'block';
             },
 
-            confirmDetails: () => {
+            confirmSetup: () => {
                 const name = document.getElementById('inp-name').value.trim();
                 const table = document.getElementById('inp-table').value.trim();
-                if(!name) return alert("Please enter name");
-                if(app.state.orderType === 'dine-in' && !table) return alert("Please enter table #");
+                if(!name) return alert("Enter Name");
+                if(app.data.type === 'dine' && !table) return alert("Enter Table #");
 
-                app.state.customer = { name, table: app.state.orderType === 'dine-in' ? table : 'N/A' };
+                app.data.customer = { name, table: app.data.type==='dine'?table:'N/A' };
                 document.getElementById('disp-name').innerText = name;
-                
-                const typeText = app.state.orderType === 'take-out' ? "Take Out" : "Table " + table;
-                document.getElementById('disp-type').innerText = typeText;
-                
-                // Set Icon
-                const icon = document.getElementById('type-icon');
-                icon.className = app.state.orderType === 'take-out' ? 'fas fa-bag-shopping' : 'fas fa-chair';
+                document.getElementById('disp-type').innerText = app.data.type==='dine' ? `TABLE ${table}` : "TAKE OUT";
                 
                 app.renderMenu();
                 app.nav('menu');
             },
 
             filter: (t, btn) => {
-                app.state.filter = t;
-                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+                app.data.filter = t;
+                document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 app.renderMenu();
             },
 
             renderMenu: () => {
-                const list = app.state.filter === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.type === app.state.filter);
-                document.getElementById('menu-grid').innerHTML = list.map(p => {
-                    const cartQty = app.state.cart.filter(i => i.id === p.id).length;
-                    const badgeClass = cartQty > 0 ? "status-badge visible" : "status-badge";
-                    
-                    return `
-                    <div class="food-card" id="card-${p.id}">
-                        <img src="${p.img}" class="food-img">
-                        <div class="food-body">
-                            <div class="item-status">
-                                <span class="${badgeClass}" id="badge-${p.id}">${cartQty}x in Cart</span>
-                            </div>
-                            <div class="food-name">${p.name}</div>
-                            <div class="food-desc">${p.desc}</div>
-                            
-                            <div class="price-row">
-                                <div class="price-tag">₱${p.price}</div>
-                                <div class="actions">
-                                    <div class="qty-box">
-                                        <button class="q-btn" onclick="app.setQty(${p.id}, -1)">-</button>
-                                        <div class="q-val" id="qty-${p.id}">${app.state.qtys[p.id]}</div>
-                                        <button class="q-btn" onclick="app.setQty(${p.id}, 1)">+</button>
-                                    </div>
-                                    <button class="add-btn" onclick="app.add(${p.id})">ADD</button>
-                                </div>
-                            </div>
+                const list = app.data.filter === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.type === app.data.filter);
+                document.getElementById('menu-grid').innerHTML = list.map(p => `
+                    <div class="item-card" onclick="app.openProduct(${p.id})">
+                        <img src="${p.img}" class="item-img">
+                        <div class="item-info">
+                            <div class="item-name">${p.name}</div>
+                            <div class="item-desc">${p.desc}</div>
+                            <div class="item-price">₱${p.price}</div>
                         </div>
+                        <div class="btn-plus-icon"><i class="fas fa-plus"></i></div>
                     </div>
-                `}).join('');
+                `).join('');
             },
 
-            setQty: (id, diff) => {
-                let n = app.state.qtys[id] + diff;
-                if(n < 1) n = 1;
-                app.state.qtys[id] = n;
-                document.getElementById(`qty-${id}`).innerText = n;
+            openProduct: (id) => {
+                const p = PRODUCTS.find(x => x.id === id);
+                app.data.tempItem = { ...p, qty: 1, selectedFlavor: p.flavors[0] };
+                
+                document.getElementById('modal-img').src = p.img;
+                document.getElementById('modal-name').innerText = p.name;
+                document.getElementById('modal-desc').innerText = p.desc;
+                document.getElementById('modal-price').innerText = p.price;
+                document.getElementById('modal-qty').innerText = 1;
+
+                document.getElementById('modal-flavors').innerHTML = p.flavors.map((f, i) => `
+                    <div class="flavor-btn ${i===0?'selected':''}" onclick="app.selectFlavor('${f}', this)">${f}</div>
+                `).join('');
+
+                document.getElementById('modal-product').classList.add('open');
             },
 
-            add: (id) => {
-                const q = app.state.qtys[id];
-                const item = PRODUCTS.find(p => p.id === id);
-                for(let i=0; i<q; i++) app.state.cart.push(item);
-                
-                app.state.qtys[id] = 1; 
-                document.getElementById(`qty-${id}`).innerText = 1;
-                
-                app.updateUI();
-                const c = document.getElementById(`card-${id}`);
-                c.style.transform = "scale(0.98)";
-                setTimeout(() => c.style.transform = "scale(1)", 150);
+            selectFlavor: (f, btn) => {
+                app.data.tempItem.selectedFlavor = f;
+                document.querySelectorAll('.flavor-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
             },
 
-            updateUI: () => {
-                const tot = app.state.cart.reduce((a,b)=>a+b.price,0);
-                document.getElementById('cart-total').innerText = tot;
-                document.getElementById('cart-count').innerText = app.state.cart.length;
-                
-                // Show/Hide Cart
-                const bar = document.getElementById('cart-float');
-                if(app.state.cart.length > 0) bar.classList.add('show');
-                else bar.classList.remove('show');
+            qty: (d) => {
+                let newQ = app.data.tempItem.qty + d;
+                if(newQ < 1) newQ = 1;
+                app.data.tempItem.qty = newQ;
+                document.getElementById('modal-qty').innerText = newQ;
+            },
 
-                // Update Badges on cards
-                PRODUCTS.forEach(p => {
-                    const count = app.state.cart.filter(i => i.id === p.id).length;
-                    const badge = document.getElementById(`badge-${p.id}`);
-                    if(badge) {
-                        badge.innerText = `${count}x in Cart`;
-                        if(count > 0) badge.classList.add('visible');
-                        else badge.classList.remove('visible');
-                    }
+            addToCart: () => {
+                const item = app.data.tempItem;
+                // Add unique entry per flavor
+                app.data.cart.push({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    flavor: item.selectedFlavor,
+                    qty: item.qty
                 });
+                app.closeProduct();
+                app.updateCartUI();
             },
 
-            viewSummary: () => {
-                const grp = {};
-                app.state.cart.forEach(i => { if(!grp[i.id]) grp[i.id] = {...i, count:0}; grp[i.id].count++; });
+            closeProduct: () => document.getElementById('modal-product').classList.remove('open'),
+
+            updateCartUI: () => {
+                const total = app.data.cart.reduce((a, b) => a + (b.price * b.qty), 0);
+                const count = app.data.cart.length;
+                document.getElementById('cart-total').innerText = total;
+                document.getElementById('cart-count').innerText = count;
                 
-                let h = ""; let t = 0;
-                for(let k in grp) {
-                    let i = grp[k]; t += (i.count * i.price);
-                    h += `<div class="review-item">
-                        <div style="flex:1">
-                            <div style="font-weight:700; font-size:1.1rem;">${i.name}</div>
-                            <small style="color:#777">@ ₱${i.price}</small>
+                const bar = document.getElementById('cart-bar');
+                if(count > 0) bar.classList.remove('hidden'); else bar.classList.add('hidden');
+            },
+
+            viewCart: () => {
+                const list = document.getElementById('cart-list');
+                let html = "";
+                let total = 0;
+                
+                app.data.cart.forEach((item, index) => {
+                    const lineTotal = item.price * item.qty;
+                    total += lineTotal;
+                    html += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #f9f9f9; padding-bottom:10px;">
+                        <div>
+                            <div style="font-weight:bold; font-size:1.1rem;">${item.qty}x ${item.name}</div>
+                            <div style="font-size:0.9rem; color:#666;">Flavor: ${item.flavor}</div>
+                            <div style="font-size:0.85rem; color:#888;">@ ₱${item.price} each</div>
                         </div>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <div class="qty-box">
-                                <button class="q-btn" style="width:30px; height:30px;" onclick="app.modCart(${i.id}, -1)">-</button>
-                                <span class="q-val">${i.count}</span>
-                                <button class="q-btn" style="width:30px; height:30px;" onclick="app.modCart(${i.id}, 1)">+</button>
-                            </div>
-                            <div style="width:60px; text-align:right; font-weight:bold;">₱${i.count*i.price}</div>
+                        <div style="text-align:right;">
+                            <div style="font-weight:bold; font-size:1.1rem;">₱${lineTotal}</div>
+                            <div style="color:red; font-size:0.9rem; cursor:pointer;" onclick="app.remItem(${index})">Remove</div>
                         </div>
                     </div>`;
-                }
-                document.getElementById('summary-list').innerHTML = h;
-                document.getElementById('sum-total').innerText = t;
+                });
+
+                list.innerHTML = html;
+                document.getElementById('checkout-total').innerText = total;
                 document.getElementById('modal-checkout').classList.add('open');
-                document.getElementById('view-review').classList.remove('hidden');
-                document.getElementById('view-receipt').classList.add('hidden');
             },
 
-            modCart: (id, d) => {
-                if(d===1) app.state.cart.push(PRODUCTS.find(p=>p.id==id));
-                else { const idx = app.state.cart.findIndex(p=>p.id==id); if(idx>-1) app.state.cart.splice(idx,1); }
-                app.updateUI(); app.viewSummary();
-                if(app.state.cart.length===0) app.closeModal();
+            remItem: (idx) => {
+                app.data.cart.splice(idx, 1);
+                app.updateCartUI();
+                app.viewCart();
+                if(app.data.cart.length === 0) app.closeModal();
             },
 
             closeModal: () => document.getElementById('modal-checkout').classList.remove('open'),
 
-            processOrder: async () => {
+            placeOrder: async () => {
                 const btn = document.getElementById('btn-pay');
-                btn.innerHTML = "SENDING..."; btn.disabled = true;
-                const tot = app.state.cart.reduce((a,b)=>a+b.price,0);
-                const qNum = Math.floor(Math.random()*900+100);
-                const order = {
-                    customer: app.state.customer.name,
-                    table: app.state.customer.table,
-                    type: app.state.orderType,
-                    items: app.state.cart.map(i=>({id:i.id, name:i.name, price:i.price})),
-                    total: tot,
+                if(app.data.cart.length === 0) return;
+                btn.innerText = "PROCESSING..."; btn.disabled = true;
+
+                const total = app.data.cart.reduce((a, b) => a + (b.price * b.qty), 0);
+                const qNum = Math.floor(Math.random() * 900 + 100);
+                
+                const orderData = {
+                    customer: app.data.customer.name,
+                    table: app.data.customer.table,
+                    type: app.data.type,
+                    items: app.data.cart,
+                    total: total,
                     queue: qNum,
                     status: 'pending',
-                    timestamp: window.fs.serverTimestamp()
+                    timestamp: serverTimestamp()
                 };
-                try {
-                    await window.fs.addDoc(window.fs.collection(window.db, "orders"), order);
-                    app.renderReceipt(order);
-                } catch(e) { alert("Error"); btn.innerHTML="CONFIRM ORDER"; btn.disabled=false; }
+
+                await addDoc(collection(db, "orders"), orderData);
+                app.showReceipt(orderData);
             },
 
-            renderReceipt: (d) => {
-                document.getElementById('view-review').classList.add('hidden');
-                document.getElementById('view-receipt').classList.remove('hidden');
+            showReceipt: (d) => {
+                app.closeModal();
+                app.nav('receipt');
                 
                 const now = new Date();
-                document.getElementById('r-date').innerText = now.toLocaleString();
-                document.getElementById('r-type').innerText = d.type.toUpperCase();
-                document.getElementById('r-name').innerText = d.customer;
-                if(d.type==='take-out') document.getElementById('r-table-row').style.display='none';
-                else { document.getElementById('r-table-row').style.display='flex'; document.getElementById('r-table').innerText=d.table; }
-                
+                document.getElementById('r-date').innerText = now.toLocaleDateString();
+                document.getElementById('r-time').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 document.getElementById('r-queue').innerText = d.queue;
+                document.getElementById('r-name').innerText = d.customer;
+                document.getElementById('r-type').innerText = d.type.toUpperCase();
+                document.getElementById('r-table').innerText = d.table;
                 document.getElementById('r-total').innerText = d.total;
+
+                if(d.type==='take') document.getElementById('r-table-row').style.display='none';
                 
-                const grp = {}; 
-                d.items.forEach(i=>{ if(!grp[i.name]) grp[i.name]={count:0, price:i.price}; grp[i.name].count++; });
-                
-                const listHtml = Object.entries(grp).map(([name, data]) => {
-                    const subtotal = data.count * data.price;
-                    return `
-                    <div class="r-row">
-                        <div style="flex:2; text-align:left;">
-                            <div>${data.count}x ${name}</div>
-                            <div style="font-size:0.75rem; color:#666;">@${data.price}</div>
+                document.getElementById('r-items').innerHTML = d.items.map(i => `
+                    <div class="r-item-row">
+                        <div class="r-item-details">
+                            <div>${i.qty}x ${i.name}</div>
+                            <span class="r-item-flavor">(${i.flavor}) @${i.price}</span>
                         </div>
-                        <div style="flex:1; text-align:right;">₱${subtotal}</div>
-                    </div>`;
-                }).join('');
-                document.getElementById('r-items').innerHTML = listHtml;
+                        <div style="font-weight:bold;">₱${i.qty * i.price}</div>
+                    </div>
+                `).join('');
             },
 
             downloadReceipt: () => {
-                html2canvas(document.getElementById("receipt-capture")).then(canvas => {
-                    const link = document.createElement('a'); link.download = "Receipt.png";
-                    link.href = canvas.toDataURL(); link.click();
+                html2canvas(document.getElementById("receipt-capture")).then(c => {
+                    const l = document.createElement('a'); l.download="Receipt.png"; l.href=c.toDataURL(); l.click();
                 });
-            },
-
-            checkAdmin: () => { if(prompt("PIN")=="1234") { app.nav('admin'); app.initAdmin(); }},
-            initAdmin: () => {
-                const q = window.fs.query(window.fs.collection(window.db,"orders"), window.fs.orderBy("timestamp","desc"), window.fs.limit(50));
-                window.fs.onSnapshot(q, (snap) => {
-                    let p = "", r = "", last = null;
-                    snap.forEach(doc => {
-                        const d = doc.data(); const id = doc.id;
-                        const card = `<div style="background:#f9f9f9; padding:10px; margin-bottom:10px; border-radius:8px; border-left:4px solid ${d.status==='pending'?'var(--brand-red)':'green'};">
-                            <div style="font-weight:bold; display:flex; justify-content:space-between;">
-                                <span>#${d.queue}</span> <span>${d.type==='take-out'?'TakeOut':'T-'+d.table}</span>
-                            </div>
-                            <div>${d.customer} (${d.items.length} items)</div>
-                            ${d.status==='pending' ? `<button class="btn btn-primary" onclick="app.setStatus('${id}','ready')" style="padding:6px; width:100%; font-size:0.9rem; margin-top:5px;">Mark Ready</button>` : 
-                            `<button class="btn btn-outline" onclick="app.setStatus('${id}','served')" style="padding:6px; width:100%; font-size:0.9rem; margin-top:5px;">Done</button>`}
-                        </div>`;
-                        if(d.status==='pending') p+=card; else if(d.status==='ready') { r+=card; if(!last) last=d; }
-                    });
-                    document.getElementById('list-prep').innerHTML = p;
-                    document.getElementById('list-ready').innerHTML = r;
-                    if(last) {
-                        document.getElementById('mon-q').innerText = last.queue;
-                        document.getElementById('mon-meta').innerHTML = `${last.type==='take-out'?'TAKE OUT':'TABLE '+last.table}<br>${last.customer}`;
-                    } else { document.getElementById('mon-q').innerText="--"; document.getElementById('mon-meta').innerText="Waiting..."; }
-                });
-            },
-            setStatus: (id,s) => window.fs.updateDoc(window.fs.doc(window.db,"orders",id),{status:s})
+            }
         };
-        
-        app.init();
     </script>
 </body>
 </html>
