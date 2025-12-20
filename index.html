@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gelo Kiosk - Real Images</title>
+    <title>Gelo Kiosk - Updated Images</title>
     
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -116,8 +116,9 @@
         .p-body { padding: 25px; overflow-y: auto; }
         .section-label { font-weight: 800; font-size: 0.9rem; color: #999; letter-spacing: 1px; margin: 20px 0 10px; text-transform: uppercase; }
         .flavor-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-        .flavor-opt { padding: 12px 20px; border: 1px solid #eee; border-radius: 12px; font-weight: 700; cursor: pointer; background: #fafafa; flex: 1; text-align: center; min-width: 80px; }
+        .flavor-opt { padding: 12px 20px; border: 1px solid #eee; border-radius: 12px; font-weight: 700; cursor: pointer; background: #fafafa; flex: 1; text-align: center; min-width: 80px; position: relative; overflow: hidden; }
         .flavor-opt.selected { border-color: var(--brand-red); background: #FFF5F5; color: var(--brand-red); }
+        .flavor-price-tag { font-size: 0.7rem; display: block; font-weight: normal; opacity: 0.8; }
 
         .qty-row { display: flex; align-items: center; background: #f4f4f4; padding: 5px; border-radius: 12px; width: fit-content; }
         .qty-btn { width: 45px; height: 45px; background: white; border: none; border-radius: 10px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -199,6 +200,7 @@
                 <button class="cat-pill" onclick="app.filter('meal', this)">Meals</button>
                 <button class="cat-pill" onclick="app.filter('drink', this)">Drinks</button>
                 <button class="cat-pill" onclick="app.filter('side', this)">Sides</button>
+                <button class="cat-pill" onclick="app.filter('extra', this)">Extras</button>
             </div>
         </div>
 
@@ -228,7 +230,7 @@
                 <div style="font-size:1.5rem; font-weight:800; color:var(--brand-red); margin:5px 0;">₱<span id="p-price">0</span></div>
                 <p style="color:#666; margin-bottom:20px;" id="p-desc">--</p>
                 
-                <div class="section-label">Select Flavor</div>
+                <div class="section-label">Select Option</div>
                 <div class="flavor-grid" id="p-flavors"></div>
                 
                 <div style="margin-top:30px; display:flex; align-items:center; gap:20px;">
@@ -294,15 +296,83 @@
     </div>
 
     <script>
-        // REAL IMAGES
+        // DATA WITH UPDATED IMAGE LINKS
         const PRODUCTS = [
-            { id: 1, type: 'meal', name: "Fried Chicken", price: 125, desc: "Golden crispy fried chicken served with rice and gravy.", flavors: ["Original", "Spicy", "Soy Garlic"], img: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=500&q=80" },
-            { id: 2, type: 'meal', name: "Cheeseburger", price: 95, desc: "Juicy beef patty topped with melted cheddar cheese.", flavors: ["Classic", "Double Cheese", "Bacon"], img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80" },
-            { id: 3, type: 'meal', name: "Spaghetti", price: 85, desc: "Sweet-style Filipino spaghetti with hotdogs.", flavors: ["Regular", "Spicy", "Extra Cheese"], img: "https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=500&q=80" },
-            { id: 4, type: 'meal', name: "Burger Steak", price: 110, desc: "Beef patty smothered in mushroom gravy with rice.", flavors: ["Original", "Pepper"], img: "https://images.unsplash.com/photo-1579366948929-444eb79841eb?auto=format&fit=crop&w=500&q=80" },
-            { id: 10, type: 'drink', name: "Iced Tea", price: 55, desc: "Refreshing house-blend lemon iced tea.", flavors: ["Lemon", "Peach", "Red Apple"], img: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=500&q=80" },
-            { id: 11, type: 'drink', name: "Coke", price: 65, desc: "Ice-cold Coca-Cola soda.", flavors: ["Regular", "Zero Sugar", "Vanilla"], img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=500&q=80" },
-            { id: 20, type: 'side', name: "French Fries", price: 70, desc: "Crispy golden potato fries.", flavors: ["Salted", "Cheese", "BBQ", "Sour Cream"], img: "https://images.unsplash.com/photo-1630384060421-a4323ceca041?auto=format&fit=crop&w=500&q=80" },
+            { 
+                id: 1, type: 'meal', name: "Fried Chicken", desc: "Golden crispy fried chicken served with rice and gravy.", img: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=500&q=80",
+                variants: [
+                    { name: "Original", price: 125 },
+                    { name: "Spicy", price: 135 },
+                    { name: "Soy Garlic", price: 140 }
+                ]
+            },
+            { 
+                id: 2, type: 'meal', name: "Cheeseburger", desc: "Juicy beef patty topped with melted cheddar cheese.", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80",
+                variants: [
+                    { name: "Classic", price: 95 },
+                    { name: "Double Cheese", price: 125 },
+                    { name: "Bacon", price: 130 }
+                ]
+            },
+            { 
+                id: 3, type: 'meal', name: "Spaghetti", desc: "Sweet-style Filipino spaghetti with hotdogs.", img: "https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=500&q=80",
+                variants: [
+                    { name: "Regular", price: 85 },
+                    { name: "Spicy", price: 90 },
+                    { name: "Extra Cheese", price: 100 }
+                ]
+            },
+            // FIXED IMAGE: BURGER STEAK
+            { 
+                id: 4, type: 'meal', name: "Burger Steak", desc: "Beef patty smothered in mushroom gravy with rice.", img: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?auto=format&fit=crop&w=500&q=80",
+                variants: [
+                    { name: "Original", price: 110 },
+                    { name: "Pepper", price: 115 }
+                ]
+            },
+            { 
+                id: 10, type: 'drink', name: "Iced Tea", desc: "Refreshing house-blend lemon iced tea.", img: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=500&q=80",
+                variants: [
+                    { name: "Lemon", price: 55 },
+                    { name: "Peach", price: 60 },
+                    { name: "Red Apple", price: 60 }
+                ]
+            },
+            { 
+                id: 11, type: 'drink', name: "Coke", desc: "Ice-cold Coca-Cola soda.", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=500&q=80",
+                variants: [
+                    { name: "Regular", price: 65 },
+                    { name: "Zero Sugar", price: 65 },
+                    { name: "Vanilla", price: 75 }
+                ]
+            },
+            // FIXED IMAGE: FRENCH FRIES
+            { 
+                id: 20, type: 'side', name: "French Fries", desc: "Crispy golden potato fries.", img: "https://images.unsplash.com/photo-1541592103040-cd15befd775c?auto=format&fit=crop&w=500&q=80",
+                variants: [
+                    { name: "Salted", price: 70 },
+                    { name: "Cheese", price: 85 },
+                    { name: "BBQ", price: 85 },
+                    { name: "Sour Cream", price: 85 }
+                ]
+            },
+            {
+                id: 30, type: 'extra', name: "Rice", desc: "Steamed fluffy white rice.", img: "https://images.unsplash.com/photo-1516684732162-798a0062be99?auto=format&fit=crop&w=500&q=80",
+                variants: [
+                    { name: "Plain", price: 25 },
+                    { name: "Garlic", price: 35 }
+                ]
+            },
+            // FIXED IMAGE: CONDIMENTS
+            {
+                id: 31, type: 'extra', name: "Condiments", desc: "Extra sauces and dips.", img: "https://images.unsplash.com/photo-1525385133512-2f3bdd039054?auto=format&fit=crop&w=500&q=80",
+                variants: [
+                    { name: "Gravy", price: 15 },
+                    { name: "Ketchup", price: 0 },
+                    { name: "Mayo", price: 10 },
+                    { name: "Chili Oil", price: 20 }
+                ]
+            }
         ];
 
         window.app = {
@@ -350,7 +420,7 @@
                             <div class="item-name">${p.name}</div>
                             <div class="item-desc">${p.desc}</div>
                             <div class="item-footer">
-                                <div class="item-price">₱${p.price}</div>
+                                <div class="item-price">₱${p.variants[0].price}</div>
                                 <div class="btn-plus"><i class="fas fa-plus"></i></div>
                             </div>
                         </div>
@@ -360,23 +430,42 @@
 
             openProduct: (id) => {
                 const p = PRODUCTS.find(x => x.id === id);
-                app.data.temp = { ...p, qty: 1, selectedFlavor: p.flavors[0] };
+                // Default to first variant
+                const defVar = p.variants[0];
+                app.data.temp = { 
+                    id: p.id, 
+                    name: p.name, 
+                    img: p.img, 
+                    qty: 1, 
+                    variant: defVar // store whole variant object {name, price}
+                };
                 
                 document.getElementById('p-img').src = p.img;
                 document.getElementById('p-name').innerText = p.name;
                 document.getElementById('p-desc').innerText = p.desc;
-                document.getElementById('p-price').innerText = p.price;
+                document.getElementById('p-price').innerText = defVar.price;
                 document.getElementById('p-qty').innerText = 1;
 
-                document.getElementById('p-flavors').innerHTML = p.flavors.map((f, i) => `
-                    <div class="flavor-opt ${i===0?'selected':''}" onclick="app.setFlavor('${f}', this)">${f}</div>
+                // Render variants with pricing logic
+                document.getElementById('p-flavors').innerHTML = p.variants.map((v, i) => `
+                    <div class="flavor-opt ${i===0?'selected':''}" onclick="app.setVariant(${p.id}, '${v.name}', this)">
+                        ${v.name}
+                        <span class="flavor-price-tag">₱${v.price}</span>
+                    </div>
                 `).join('');
 
                 document.getElementById('modal-product').classList.add('open');
             },
 
-            setFlavor: (f, el) => {
-                app.data.temp.selectedFlavor = f;
+            setVariant: (pid, vName, el) => {
+                const p = PRODUCTS.find(x => x.id === pid);
+                const variant = p.variants.find(v => v.name === vName);
+                
+                app.data.temp.variant = variant;
+                
+                // Update UI Price
+                document.getElementById('p-price').innerText = variant.price;
+
                 document.querySelectorAll('.flavor-opt').forEach(b => b.classList.remove('selected'));
                 el.classList.add('selected');
             },
@@ -390,13 +479,20 @@
 
             addToCart: () => {
                 const t = app.data.temp;
-                const exist = app.data.cart.find(i => i.id === t.id && i.flavor === t.selectedFlavor);
+                const v = t.variant;
+                // Check if exact item+variant exists
+                const exist = app.data.cart.find(i => i.id === t.id && i.flavor === v.name);
+                
                 if(exist) {
                     exist.qty += t.qty;
                 } else {
                     app.data.cart.push({
-                        id: t.id, name: t.name, price: t.price, 
-                        img: t.img, flavor: t.selectedFlavor, qty: t.qty
+                        id: t.id, 
+                        name: t.name, 
+                        price: v.price, // Use variant price
+                        img: t.img, 
+                        flavor: v.name, 
+                        qty: t.qty
                     });
                 }
                 app.closeModal('modal-product');
