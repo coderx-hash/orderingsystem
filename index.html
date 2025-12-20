@@ -194,8 +194,11 @@
 <body>
 
     <script type="module">
+        // API KEY IS HERE: AIzaSyDxmEuSOtR_SHPZu2LWCc6HG5U5HfgUlPM
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        
+        // YOUR API KEY IS SAFE HERE
         const appInfo = initializeApp({ apiKey: "AIzaSyDxmEuSOtR_SHPZu2LWCc6HG5U5HfgUlPM", authDomain: "orderingsystem-9dcd9.firebaseapp.com", projectId: "orderingsystem-9dcd9", storageBucket: "orderingsystem-9dcd9.firebasestorage.app", messagingSenderId: "879405920262", appId: "1:879405920262:web:d677b534a4f374a4aa1387", measurementId: "G-JHLBK4QB1B" });
         window.db = getFirestore(appInfo); window.fs = { collection, addDoc, serverTimestamp };
     </script>
@@ -363,7 +366,7 @@
     </div>
 
     <script>
-        // FIXED DATA - RELIABLE IMAGES
+        // FIXED DATA - NEW RELIABLE IMAGE FOR FRIES
         const PRODUCTS = [
             { 
                 id: 1, type: 'meal', name: "Fried Chicken", desc: "Golden crispy chicken with rice.", 
@@ -377,7 +380,7 @@
             },
             { 
                 id: 3, type: 'meal', name: "Spaghetti", desc: "Sweet Filipino style pasta.", 
-                img: "https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=500&q=80",
+                img: "https://plus.unsplash.com/premium_photo-1664472682525-0c0b50534850?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                 variants: [ { name: "Regular", price: 85 }, { name: "Spicy", price: 90 }, { name: "Extra Cheese", price: 100 } ]
             },
             { 
@@ -385,9 +388,10 @@
                 img: "https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=500&q=80",
                 variants: [ { name: "Original", price: 110 }, { name: "Pepper", price: 115 } ]
             },
+            // FIXED FRIES IMAGE
             { 
                 id: 20, type: 'side', name: "French Fries", desc: "Crispy cut potato fries.", 
-                img: "https://images.unsplash.com/photo-1630384060421-a4323ceca041?auto=format&fit=crop&w=500&q=80",
+                img: "https://images.unsplash.com/photo-1652448259130-729d9fb02a2d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                 variants: [ { name: "Salted", price: 70 }, { name: "Cheese", price: 85 }, { name: "BBQ", price: 85 }, { name: "Sour Cream", price: 85 } ]
             },
             { 
@@ -407,7 +411,7 @@
             },
             {
                 id: 31, type: 'extra', name: "Condiments", desc: "Extra dips and sauces.", 
-                img: "https://images.unsplash.com/photo-1585238342024-78d387f4a707?auto=format&fit=crop&w=500&q=80",
+                img: "https://plus.unsplash.com/premium_photo-1723860017957-601cd6fef533?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                 variants: [ { name: "Gravy", price: 15 }, { name: "Mayo", price: 10 }, { name: "Ketchup", price: 0 } ]
             }
         ];
